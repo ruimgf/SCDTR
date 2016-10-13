@@ -7,7 +7,7 @@
 
 int read;
 float lux;
-
+int new_lux;
 
 float calc_lux_ldr(int read){
 
@@ -17,20 +17,29 @@ float calc_lux_ldr(int read){
   float lux;
 
   volt = read/1024.0 * 5;
-  //Serial.print("Volt:");
-  //Serial.println(volt);
+
   R_LDR = ((5-volt)*R)/volt ;
-  //Serial.print("R_LDR:");
-  //Serial.println(R_LDR);
+
   lux = (pow(10,( ( log10(R_LDR) - 4.1 ) / (-0.7332337683) ))) / 0.093;
+
   return lux;
 }
 
+int value_to_write(float desired_lux){
+
+  float m = 0.6947;
+  float b = -1.0189;
+
+
+  return (int)((desired_lux-b)/m);
+
+
+}
 void setup() {
   // put your setup code here, to run once:
   pinMode(LED, OUTPUT);
   pinMode(LDR, INPUT);
-  analogWrite(LED, 100);
+  analogWrite(LED, value_to_write(100));
   Serial.begin(9600);
 
 }
@@ -39,8 +48,12 @@ void loop() {
   // put your main code here, to run repeatedly:
 
   read = analogRead(LDR);
-  //Serial.print("Read val:");
-  //Serial.println(read);
+  if(Serial.available() > 0){
+
+    new_lux = Serial.parseInt();
+    analogWrite(LED, value_to_write(new_lux));
+
+  }
   Serial.print("Lux:");
   lux = calc_lux_ldr(read);
   Serial.println(lux);
