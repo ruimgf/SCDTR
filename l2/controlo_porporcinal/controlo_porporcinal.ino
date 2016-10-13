@@ -8,6 +8,8 @@
 int read;
 float lux;
 int new_lux;
+int pwm_value;
+
 
 float calc_lux_ldr(int read){
 
@@ -39,11 +41,13 @@ void setup() {
   // put your setup code here, to run once:
   pinMode(LED, OUTPUT);
   pinMode(LDR, INPUT);
-  analogWrite(LED, value_to_write(100));
+  analogWrite(LED, value_to_write(50));
   Serial.begin(9600);
+  pwm_value = value_to_write(50);
+  new_lux = 50;
 
 }
-
+int i = 0;
 void loop() {
   // put your main code here, to run repeatedly:
 
@@ -51,13 +55,35 @@ void loop() {
   if(Serial.available() > 0){
 
     new_lux = Serial.parseInt();
-    analogWrite(LED, value_to_write(new_lux));
+    pwm_value = value_to_write(new_lux);
+    analogWrite(LED, pwm_value);
+
+  }else{
+    if(abs(lux - new_lux) > 2 ){
+      if(lux < new_lux){
+        pwm_value++;
+        analogWrite(LED, pwm_value);
+      }
+      if(lux > new_lux){
+        pwm_value--;
+        analogWrite(LED, pwm_value);
+      }
+
+    }
 
   }
-  Serial.print("Lux:");
-  lux = calc_lux_ldr(read);
-  Serial.println(lux);
 
-  delay(2000);
+  lux = calc_lux_ldr(read);
+
+
+
+  if(i >= 2000/50 ){
+    Serial.print("Lux:");
+    Serial.println(lux);
+    i=0;
+  }
+  i++;
+
+  delay(50);
 
 }
