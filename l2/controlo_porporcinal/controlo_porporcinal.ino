@@ -42,7 +42,7 @@ void setup() {
   pinMode(LED, OUTPUT);
   pinMode(LDR, INPUT);
   analogWrite(LED, value_to_write(50));
-  Serial.begin(9600);
+  Serial.begin(115200);
   pwm_value = value_to_write(50);
   new_lux = 50;
 
@@ -77,13 +77,14 @@ void loop() {
 
 
 
-  if(i >= 2000/50 ){
-    Serial.print("Lux:");
+  //if(i >= 2000/50 ){
+    //Serial.print(millis());
+    //Serial.print("|");
     Serial.println(lux);
-    i=0;
-  }
+    //i=0;
+  //}
   i++;
 
-  delay(50);
+  delay(1);
 
 }
