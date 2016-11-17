@@ -22,9 +22,47 @@ void setup() {
 }
 int x;
 void loop() {
-  Serial.print("Hello World ");
-  Serial.println(x);
-  x++;
-  delay(1000);
+  String request;
+  int lum = 10;
+  int duty = 255;
+  bool occupancy = 1;
+  int external_illu = 20;
+  int illu = 30;
+  char a;
+  if(Serial.available() > 0){
+    request = Serial.readString();
 
+    if(request.charAt(0)=='g'){
+      
+      switch (request.charAt(2)) {
+      case 'l': // response with current lummens at this desk
+        Serial.print("l ");
+        Serial.println(lum);
+        break;
+      case 'd': // get duty cycle
+        Serial.print("d ");
+        Serial.println(duty);
+        break;
+      case 'o': // get occupancy
+        Serial.print("o ");
+        Serial.println(occupancy);
+        break;
+      case 'L': // get current iluminance lower bound at desk
+        Serial.print("o ");
+        Serial.println(illu);
+        break;
+      case 'O': // get current external illuminance at desk
+        Serial.print("O ");
+        Serial.println(external_illu);
+        break;
+      case 'r': // get current external illuminance at desk
+        Serial.print("r ");
+        Serial.println(external_illu);
+        break;
+      default:
+        break;
+      }
+    }
+
+  }
 }
