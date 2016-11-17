@@ -81,13 +81,12 @@ int raspduino::get_lum(){
 
 int raspduino::get_duty(){
   boost::asio::streambuf buf;
-  std::cout << "vou enviar" << '\n';
-  string str = "g d";
-  write(sp,	boost::asio::buffer(str));
-  std::cout << "enviei" << '\n';
-  sleep(5);
+
+  write(sp,	boost::asio::buffer("g d"));
+
+
   read_until(sp,	buf,	"\n");
-  std::cout << "recebi" << '\n';
+
   std::ostringstream ss;
   ss << &buf;
 
