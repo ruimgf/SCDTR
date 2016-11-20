@@ -1,6 +1,13 @@
-int ARDUINO_NUMBER=1;
 
-void setup() {
+int ARDUINO_NUMBER=1;
+int lum = 10;
+int duty = 255;
+bool occupancy = 1;
+int external_illu = 20;
+int illu = 30;
+int x;
+
+void setup_serial(){
   Serial.begin(115200);           // start serial for output
   String challenge;
   while(1){
@@ -16,24 +23,21 @@ void setup() {
             break;
         }
         delay(100);
-
   }
 
 }
-int x;
-void loop() {
-  String request;
-  int lum = 10;
-  int duty = 255;
-  bool occupancy = 1;
-  int external_illu = 20;
-  int illu = 30;
-  char a;
-  if(Serial.available() > 0){
+
+void setup() {
+    setup_serial();
+}
+
+
+void check_serial(){
+    String request;
     request = Serial.readString();
 
     if(request.charAt(0)=='g'){
-      
+
       switch (request.charAt(2)) {
       case 'l': // response with current lummens at this desk
         Serial.print("l ");
@@ -64,5 +68,14 @@ void loop() {
       }
     }
 
+
+  return ;
+}
+
+void loop() {
+
+  if(Serial.available()>0){
+    check_serial();
   }
+
 }

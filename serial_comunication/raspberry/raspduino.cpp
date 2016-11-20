@@ -19,7 +19,8 @@ raspduino::raspduino(string port){
     cout <<	"Error";
     exit(-1);
   }
-  sleep(2);
+
+  sleep(2); // arduino reset when a connection is set, let wait a bit
 
   string str_start = "Who";
 
@@ -52,7 +53,9 @@ string raspduino::send_mensage(string str){
 
   boost::asio::streambuf buf;
   write(sp,	boost::asio::buffer(str));
+
   read_until(sp,	buf,	"\n");
+
   std::ostringstream ss;
   ss << &buf;
   return ss.str();
@@ -72,7 +75,6 @@ int raspduino::get_lum(){
 
   std::ostringstream ss;
   ss << &buf;
-
   string response{ss.str(),2};
   return atoi(response.c_str());
 
@@ -84,13 +86,12 @@ int raspduino::get_duty(){
 
   write(sp,	boost::asio::buffer("g d"));
 
-
   read_until(sp,	buf,	"\n");
 
   std::ostringstream ss;
   ss << &buf;
-
   string response{ss.str(),2};
+
   return atoi(response.c_str());
 
 }
