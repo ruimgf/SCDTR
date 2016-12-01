@@ -85,14 +85,12 @@ int raspduino::get_duty(){
   boost::asio::streambuf buf;
 
   write(sp,	boost::asio::buffer("g d"));
+    //read_until(sp,	buf,	"\n");
+    //std::ostringstream ss;
+    //ss << &buf;
+    //string response{ss.str(),2};
 
-  read_until(sp,	buf,	"\n");
-
-  std::ostringstream ss;
-  ss << &buf;
-  string response{ss.str(),2};
-
-  return atoi(response.c_str());
+  //return atoi(response.c_str());
 
 }
 bool raspduino::get_occup(){
@@ -151,3 +149,22 @@ int raspduino::get_reference(){
   return atoi(response.c_str());
 
 }
+
+ void raspduino::read_state(int & lummens, int & duty ){
+   std::ostringstream ss;
+   boost::asio::streambuf buf;
+
+     read_until(sp,	buf,	"\n");
+     ss << &buf;
+     if(ss.str().compare(0,1,	"l")==0){
+       string response_lum{ss.str(),2};
+       lummens = atoi(response_lum.c_str());
+     }
+
+     read_until(sp,	buf,	"\n");
+     ss << &buf;
+     if(ss.str().compare(0,1,	"d")==0){
+       string response_duty{ss.str(),2};
+       duty = atoi(response_duty.c_str());
+     }
+ }

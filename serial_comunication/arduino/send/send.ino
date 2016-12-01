@@ -44,8 +44,9 @@ void check_serial(){
         Serial.println(lum);
         break;
       case 'd': // get duty cycle
-        Serial.print("d ");
-        Serial.println(duty);
+        //Serial.print("d ");
+        //Serial.println(duty);
+        duty = duty + 1;
         break;
       case 'o': // get occupancy
         Serial.print("o ");
@@ -72,10 +73,24 @@ void check_serial(){
   return ;
 }
 
-void loop() {
+void write_values(){
+
+  Serial.print("l ");
+  Serial.println(lum);
+
+  Serial.print("d ");
+  Serial.println(duty);
+
+}
+
+void loop(){
 
   if(Serial.available()>0){
     check_serial();
   }
+  write_values();
+  
+  
+  delay(10);
 
 }
