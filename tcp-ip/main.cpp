@@ -9,16 +9,9 @@ using namespace boost::asio;
 using ip::tcp;
 
 int main(){
+  tcp_server server1;
 
-  boost::asio::io_service io;
-  boost::asio::ip::tcp::acceptor acceptor(io);
-
-  for (;;) {
-    tcp::socket socket(io);
-    //wait client to	connect
-    acceptor.accept(socket);
-    //client is accessing service
-    write(socket,	buffer("Hello World\n"));
-  }
+  server1.attep_conn();
+  
 
 }

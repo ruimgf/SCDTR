@@ -1,2 +1,5 @@
-read:
-	g++ -std=c++11 main.cpp -lpthread -lboost_system -o tcp_server -I/usr/local/include/ -L/usr/local/lib -I.
+server:
+	g++ -std=c++11 main.cpp tcp_server.cpp -lpthread -lboost_system -o tcp_server -I/usr/local/include/ -L/usr/local/lib -I.
+
+client:
+	g++ -std=c++11 client.cpp -lpthread -lboost_system -o tcp_client -I/usr/local/include/ -L/usr/local/lib -I.

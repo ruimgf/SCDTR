@@ -17,8 +17,10 @@ using namespace boost::asio;
 void thread_session(int arduino_number){
 
   while(1){
+    
       arduinos[arduino_number].read_state();
       arduinos[arduino_number].printvalues();
+
   }
 
 
