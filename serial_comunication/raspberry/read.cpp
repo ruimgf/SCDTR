@@ -9,10 +9,19 @@ using namespace boost::asio;
 int main(){
     raspduino ard{"/dev/cu.usbmodemFD121"};
     ard.print_id();
-    cout << ard.get_duty() << endl;
-    cout << ard.get_ext_ilum() << endl;
-    cout << ard.get_lower_bound() << endl;
-    cout << ard.get_lum() << endl;
-    cout << ard.get_occup() << endl;
-    cout << ard.get_reference() << endl;
+    int lum;
+    int duty;
+    int i = 0;
+    while (1) {
+      i++;
+      ard.read_state(lum,duty);
+      std::cout << "lum" << lum << '\n';
+      std::cout << "duty" << duty << '\n';
+      std::cout << i << '\n';
+      if(i%100==0){
+        //std::cout << "go get duty" << '\n';
+        ard.change_ocp(0);
+      }
+    }
+
 }
