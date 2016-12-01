@@ -21,7 +21,8 @@ int main(){
   arduinos[0].init(PORT_ILLUM0);
 
   while(1){
-    arduinos[0].printvalues
+    arduinos[0].read_state();
+    arduinos[0].printvalues();
   }
 
 
