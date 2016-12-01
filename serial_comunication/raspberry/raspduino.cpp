@@ -24,7 +24,7 @@ void raspduino::init(string port){
     cout <<	"Error";
     exit(-1);
   }
-  //std::cout << "open port" << '\n';
+  std::cout << "open port" << '\n';
   sp.set_option(serial_port_base::baud_rate(115200),ec);
   if(	ec ){
     cout <<	"Error";
@@ -36,12 +36,14 @@ void raspduino::init(string port){
   string str_start = "Who";
 
   write(sp,	boost::asio::buffer(str_start));
+  sleep(1);
 
   for	(;;)
   {
     boost::asio::streambuf str;
     string number;
     read_until(sp,	str,	"\n");
+    std::cout << "after read until" << '\n';
     std::ostringstream ss;
     ss << &str;
     string msa = ss.str();
@@ -106,6 +108,7 @@ float raspduino::get_reference(){
  void raspduino::read_state(){
    std::ostringstream ss;
    boost::asio::streambuf buf;
+
 
      read_until(sp,	buf,	"\n");
      ss << &buf;
