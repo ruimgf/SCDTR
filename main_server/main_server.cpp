@@ -14,10 +14,11 @@ raspduino arduinos[NUMBER_ILLUM];
 using namespace std;
 using namespace boost::asio;
 
-void thread_session(int *arduino_number){
+void thread_session(int &arduino_number){
 
   while(1){
-  arduinos[*arduino_number].read_state();
+      arduinos[arduino_number].read_state();
+      arduinos[arduino_number].printvalues;
   }
 
 
@@ -30,11 +31,9 @@ int main(){
   arduinos[0].init(PORT_ILLUM0);
 
   for (i=0;i<NUMBER_ILLUM;i++){
-    boost::thread t(boost::bind(thread_session,&i));
+    boost::thread t(boost::bind(thread_session,i));
   }
 
-  while(1){
-
-  }
+  t.join;
 
 }
