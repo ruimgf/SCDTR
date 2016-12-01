@@ -19,3 +19,5 @@ int main(){
     std::cout.write(buf.data(),	len);
   }
 }
+//teste
+//adjasdksajdksajd
