@@ -15,16 +15,15 @@ using namespace boost::asio;
 using	ip::tcp;
 
 
-// class tcp_server {
-//   private:
-//     //initialize services
-//     boost::asio::io_service io;
-//     //create a	listening socket
-//     //	bind and start listening at port 10000
-//     tcp::acceptor acceptor{io,tcp_ip,	10000};
-//   public:
-//     void attep_conn();
-// };
+class tcp_server {
+  private:
+    boost::asio::io_service io;
+    boost::asio::ip::tcp::acceptor acceptor{io};
+    boost::asio::ip::tcp::endpoint endpoint{boost::asio::ip::tcp::v4(), 10000};
+  public:
+    void attep_conn();
+    tcp_server();
+};
 
 
 #endif //TCP_SERVER.H
