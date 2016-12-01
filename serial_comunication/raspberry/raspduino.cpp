@@ -20,6 +20,12 @@ raspduino::raspduino(string port){
     exit(-1);
   }
 
+  li[0] = li[1] = li[2] = 0;
+  E=0;
+  V_f=0;
+  C_e=0;
+  occupancy=0;
+
   sleep(2); // arduino reset when a connection is set, let wait a bit
 
   string str_start = "Who";
@@ -66,33 +72,7 @@ void raspduino::print_id(){
     cout << id << endl;
 }
 
-int raspduino::get_lum(){
 
-  boost::asio::streambuf buf;
-  write(sp,	boost::asio::buffer("g l"));
-
-  read_until(sp,	buf,	"\n");
-
-  std::ostringstream ss;
-  ss << &buf;
-  string response{ss.str(),2};
-  return atoi(response.c_str());
-
-}
-
-
-int raspduino::get_duty(){
-  boost::asio::streambuf buf;
-
-  write(sp,	boost::asio::buffer("g d"));
-    //read_until(sp,	buf,	"\n");
-    //std::ostringstream ss;
-    //ss << &buf;
-    //string response{ss.str(),2};
-
-  //return atoi(response.c_str());
-
-}
 void raspduino::change_ocp(bool occupancy){
 
   boost::asio::streambuf buf;
@@ -108,34 +88,6 @@ void raspduino::change_ocp(bool occupancy){
 
 }
 
-int raspduino::get_lower_bound(){
-
-  boost::asio::streambuf buf;
-  write(sp,	boost::asio::buffer("g L"));
-
-  read_until(sp,	buf,	"\n");
-
-  std::ostringstream ss;
-  ss << &buf;
-
-  string response{ss.str(),2};
-  return atoi(response.c_str());
-
-}
-
-int raspduino::get_ext_ilum(){
-  boost::asio::streambuf buf;
-  write(sp,	boost::asio::buffer("g O"));
-
-  read_until(sp,	buf,	"\n");
-
-  std::ostringstream ss;
-  ss << &buf;
-  string response{ss.str(),2};
-  return atoi(response.c_str());
-
-
-}
 float raspduino::get_reference(){
 
     if(occupancy==0){
