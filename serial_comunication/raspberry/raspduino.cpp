@@ -6,25 +6,30 @@
 using namespace std;
 using namespace boost::asio;
 
-raspduino::raspduino(string port){
-  boost::system::error_code ec;
-  sp.open(port,	ec);				//connect to	port
-  if(	ec ){
-    cout <<	"Error";
-    exit(-1);
-  }
-  std::cout << "open port" << '\n';
-  sp.set_option(serial_port_base::baud_rate(115200),ec);
-  if(	ec ){
-    cout <<	"Error";
-    exit(-1);
-  }
+raspduino::raspduino(){
+
 
   li[0] = li[1] = li[2] = 0;
   E=0;
   V_f=0;
   C_e=0;
   occupancy=0;
+}
+
+void raspduino::init(string port){
+
+  boost::system::error_code ec;
+  sp.open(port,	ec);				//connect to	port
+  if(	ec ){
+    cout <<	"Error";
+    exit(-1);
+  }
+  //std::cout << "open port" << '\n';
+  sp.set_option(serial_port_base::baud_rate(115200),ec);
+  if(	ec ){
+    cout <<	"Error";
+    exit(-1);
+  }
 
   sleep(2); // arduino reset when a connection is set, let wait a bit
 
@@ -47,7 +52,7 @@ raspduino::raspduino(string port){
         break;
     }
   }
-
+  std::cout << id << '\n';
 }
 
 raspduino::~raspduino(){
@@ -98,7 +103,7 @@ float raspduino::get_reference(){
 
 }
 
- void raspduino::read_state(int & lummens, int & duty ){
+ void raspduino::read_state(){
    std::ostringstream ss;
    boost::asio::streambuf buf;
 
@@ -106,7 +111,9 @@ float raspduino::get_reference(){
      ss << &buf;
      if(ss.str().compare(0,1,	"l")==0){
        string response_lum{ss.str(),1};
-       lummens = atoi(response_lum.c_str());
+       li[2] = li[1];
+       li[1] = li[0];
+       li[0] = atoi(response_lum.c_str());
      }
 
      read_until(sp,	buf,	"\n");
@@ -115,4 +122,11 @@ float raspduino::get_reference(){
        string response_duty{ss.str(),1};
        duty = atoi(response_duty.c_str());
      }
+ }
+
+ void raspduino::printvalues(){
+
+   std::cout << "lux " << li[0] << '\n';
+   std::cout << "duty " << duty << '\n';
+
  }
