@@ -21,7 +21,6 @@ void tcp_server::attep_conn(){
    acceptor.accept(socket);
    //client is accessing service
    for (;;) {
-
      write(socket,	buffer("Hello World\n"));
    }
 
