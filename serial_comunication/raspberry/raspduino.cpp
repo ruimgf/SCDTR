@@ -20,6 +20,7 @@ raspduino::raspduino(string port){
     exit(-1);
   }
 
+  //inicializes values of luminance E ... etc of the object arduino
   li[0] = li[1] = li[2] = 0;
   E=0;
   V_f=0;

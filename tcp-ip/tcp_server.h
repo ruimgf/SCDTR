@@ -4,17 +4,10 @@
 #define	TCP_SERVER.H
 #include <iostream>
 #include <boost/asio.hpp>
+#include <boost/bind.hpp>
+#include <boost/shared_ptr.hpp>
+#include <boost/enable_shared_from_this.hpp>
+#include <boost/asio.hpp>
 
-
-using namespace std;
-using namespace boost::asio;
-
-class raspduino{
-  private:
-  boost::asio::io_service io;
-
-  public:
-
-};
 
 #endif //TCP_SERVER.H
