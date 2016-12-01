@@ -6,16 +6,13 @@
 #include "raspduino.h"
 #include "defs.h"
 
-
+raspduino arduinos[NUMBER_ILLUM];
 
 using namespace std;
 using namespace boost::asio;
 
 
 int main(){
-
-  // raspduino	myarduinos[0]{};
-  raspduino arduinos[NUMBER_ILLUM];
 
   // replace for a system call ls searching for all ports avaliable
   arduinos[0].init(PORT_ILLUM0);
