@@ -11,8 +11,7 @@ using ip::tcp;
 int main(){
   tcp_server server1;
 
-  for (;;) {
-    server1.attep_conn();
-  }
+  server1.attep_conn();
+  
 
 }

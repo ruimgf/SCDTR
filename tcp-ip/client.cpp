@@ -21,4 +21,6 @@ int main()		{
     else if (err)		std::cout <<	"Unknown Error";
     std::cout.write(buf.data(),	len);
   }
+
+  std::cout << "go out" << '\n';
 }
