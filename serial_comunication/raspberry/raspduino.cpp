@@ -93,18 +93,18 @@ int raspduino::get_duty(){
   //return atoi(response.c_str());
 
 }
-bool raspduino::get_occup(){
+void raspduino::change_ocp(bool occupancy){
 
   boost::asio::streambuf buf;
-  write(sp,	boost::asio::buffer("g o"));
+  string mensage{"co"};
+  if(occupancy!=0){
+    mensage += "O"; // ocupate
+  }else{
+    mensage += "N"; // not ocupate
+  }
+  std::cout << mensage << '\n';
 
-  read_until(sp,	buf,	"\n");
-
-  std::ostringstream ss;
-  ss << &buf;
-
-  string response{ss.str(),2};
-  return atoi(response.c_str());
+  write(sp,	boost::asio::buffer(mensage));
 
 }
 
@@ -136,17 +136,13 @@ int raspduino::get_ext_ilum(){
 
 
 }
-int raspduino::get_reference(){
-  boost::asio::streambuf buf;
-  write(sp,	boost::asio::buffer("g r"));
+float raspduino::get_reference(){
 
-  read_until(sp,	buf,	"\n");
-
-  std::ostringstream ss;
-  ss << &buf;
-
-  string response{ss.str(),2};
-  return atoi(response.c_str());
+    if(occupancy==0){
+      return DEFAULT_UNCUP_LUX_REF;
+    }else{
+      return DEFAULT_OCCUP_LUX_REF;
+    }
 
 }
 
@@ -157,14 +153,14 @@ int raspduino::get_reference(){
      read_until(sp,	buf,	"\n");
      ss << &buf;
      if(ss.str().compare(0,1,	"l")==0){
-       string response_lum{ss.str(),2};
+       string response_lum{ss.str(),1};
        lummens = atoi(response_lum.c_str());
      }
 
      read_until(sp,	buf,	"\n");
      ss << &buf;
      if(ss.str().compare(0,1,	"d")==0){
-       string response_duty{ss.str(),2};
+       string response_duty{ss.str(),1};
        duty = atoi(response_duty.c_str());
      }
  }

@@ -35,10 +35,9 @@ void setup() {
 void check_serial(){
     String request;
     request = Serial.readString();
+    if(request.charAt(0)=='c'){
 
-    if(request.charAt(0)=='g'){
-
-      switch (request.charAt(2)) {
+      switch (request.charAt(1)) {
       case 'l': // response with current lummens at this desk
         Serial.print("l ");
         Serial.println(lum);
@@ -49,8 +48,11 @@ void check_serial(){
         duty = duty + 1;
         break;
       case 'o': // get occupancy
-        Serial.print("o ");
-        Serial.println(occupancy);
+        if(request.charAt(2) =='N'){
+           lum = 0;
+        }else{
+          lum = 20;
+        }
         break;
       case 'L': // get current iluminance lower bound at desk
         Serial.print("o ");
@@ -75,10 +77,10 @@ void check_serial(){
 
 void write_values(){
 
-  Serial.print("l ");
+  Serial.print("l");
   Serial.println(lum);
 
-  Serial.print("d ");
+  Serial.print("d");
   Serial.println(duty);
 
 }
@@ -88,9 +90,5 @@ void loop(){
   if(Serial.available()>0){
     check_serial();
   }
-  write_values();
-  
-  
-  delay(10);
-
+  write_values();  
 }

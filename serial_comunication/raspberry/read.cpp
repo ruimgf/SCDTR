@@ -17,10 +17,10 @@ int main(){
       ard.read_state(lum,duty);
       std::cout << "lum" << lum << '\n';
       std::cout << "duty" << duty << '\n';
-
+      std::cout << i << '\n';
       if(i%100==0){
         //std::cout << "go get duty" << '\n';
-        ard.get_duty();
+        ard.change_ocp(0);
       }
     }
 
