@@ -2,6 +2,9 @@
 #include <boost/asio.hpp>
 #include	<algorithm>
 #include	<vector>
+#include <cstdlib>
+#include <boost/bind.hpp>
+#include <boost/thread/thread.hpp>
 
 #include "raspduino.h"
 #include "defs.h"
@@ -11,16 +14,27 @@ raspduino arduinos[NUMBER_ILLUM];
 using namespace std;
 using namespace boost::asio;
 
+void thread_session(int *arduino_number){
+
+  while(1){
+  arduinos[*arduino_number].read_state();
+  }
+
+
+}
+
 
 int main(){
-
+  int i;
   // replace for a system call ls searching for all ports avaliable
   arduinos[0].init(PORT_ILLUM0);
 
-  while(1){
-    arduinos[0].read_state();
-    arduinos[0].printvalues();
+  for (i=0;i<NUMBER_ILLUM;i++){
+    boost::thread t(boost::bind(thread_session,&i));
   }
 
+  while(1){
+
+  }
 
 }
