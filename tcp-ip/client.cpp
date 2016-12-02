@@ -16,10 +16,26 @@ int main()		{
 
   for	(;;){
     boost::array <char,128>	buf;
+    std::string str;
+
+    std::getline (std::cin,str);
+    if(str=="quit"){
+      break;
+    }
+    write(socket,	buffer(str));
+
+
     size_t len =	socket.read_some(buffer(buf),	err);
-    if (err ==	error::eof)			break;	//	Closed cleanly by peer.
-    else if (err)		std::cout <<	"Unknown Error";
+    if (err ==	error::eof)
+        break;	//	Closed cleanly by peer.
+    else if (err)
+        std::cout <<	"Unknown Error";
+
+    std::cout << "response: ";
     std::cout.write(buf.data(),	len);
+    std::cout << '\n';
+
+
   }
 
   std::cout << "go out" << '\n';

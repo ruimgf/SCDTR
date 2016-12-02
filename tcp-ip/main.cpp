@@ -8,6 +8,7 @@
 
 
 using namespace boost::asio;
+using namespace std;
 using ip::tcp;
 
 tcp_server server1;
@@ -15,7 +16,7 @@ tcp_server server1;
 
 void thread_session(){
   while(1){
-      server1.attep_conn();
+    server1.attep_conn();
   }
 
 }
@@ -28,7 +29,11 @@ int main(){
 
 
 
-   while (1) {
-   /* code */
-   }
+  while (1) {
+    string str;
+    std::getline (std::cin,str);
+    if(str == "quit"){
+      break;
+    }
+  }
 }
