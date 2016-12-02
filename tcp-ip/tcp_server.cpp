@@ -16,12 +16,15 @@ tcp_server::tcp_server(){
 
 void tcp_server::attep_conn(){
    //create service socket
+   std::cout << "create socket" << '\n';
    tcp::socket socket(io);
    //wait client to	connect
+   std::cout << "go accept" << '\n';
    acceptor.accept(socket);
+   std::cout << "accept" << '\n';
    //client is accessing service
    for (;;) {
-
+     
      write(socket,	buffer("Hello World\n"));
    }
 

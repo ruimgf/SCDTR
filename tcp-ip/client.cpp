@@ -7,7 +7,7 @@ int main()		{
   io_service io;
   boost::system::error_code err;
   tcp::resolver	resolver(io);
-  tcp::resolver::query query("194.210.158.131",	"10000");
+  tcp::resolver::query query("127.0.0.1",	"10000");
 
   tcp::resolver::iterator endpoint =	resolver.resolve(query);
   tcp::socket socket(io);
