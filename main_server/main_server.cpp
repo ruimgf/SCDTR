@@ -37,7 +37,7 @@ void *thread_session(void* thread_arg){
 
 
 int main(){
-  pthreat_t threads[NUMBER_ILLUM];
+  pthread_t threads[NUMBER_ILLUM];
   thread_data td[NUMBER_ILLUM];
   arduinos[0].init(PORT_ILLUM0); /*arduino 1;*/
   arduinos[1].init(PORT_ILLUM1);
