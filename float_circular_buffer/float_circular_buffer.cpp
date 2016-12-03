@@ -2,7 +2,7 @@
 
 using namespace std;
 
-float_circular_buffer::float_circular_buffer(float buffer_size){
+float_circular_buffer::float_circular_buffer(int buffer_size){
   buffer = new float[buffer_size];
   actual_position = 0;
   max_position = buffer_size;
@@ -17,7 +17,7 @@ float float_circular_buffer::read_actual_value(){
   return buffer[actual_position-1];
 }
 
-float float_circular_buffer::read_n_value(float n){
+float float_circular_buffer::read_n_value(int n){
   if(n>=max_position){
     return -10;
   }
@@ -32,7 +32,7 @@ vector<float> float_circular_buffer::read_all_values(){
 
   if(loop_number == 0){
     float return_vector [actual_position];
-    for(float i =0;i<actual_position;i++){
+    for(int i =0;i<actual_position;i++){
       return_vector[i]=buffer[i];
     }
     vector<float> fifth (return_vector, return_vector + sizeof(return_vector) / sizeof(float) );
@@ -40,12 +40,12 @@ vector<float> float_circular_buffer::read_all_values(){
   }
 
     float return_vector [max_position];
-    float j = 0;
-    for(float i=actual_position;i<max_position;i++){
+    int j = 0;
+    for(int i=actual_position;i<max_position;i++){
       return_vector[j] = buffer[i];
       j=j+1;
     }
-    for(float i=0;i<actual_position;i++){
+    for(int i=0;i<actual_position;i++){
       return_vector[j] = buffer[i];
       j=j+1;
     }

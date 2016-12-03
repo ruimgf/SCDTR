@@ -8,16 +8,16 @@ de floateiros em que quando chegamos ao fim começa a escrever por cima no inici
 class float_circular_buffer{
 private:
   float* buffer;
-  float actual_position;
-  float max_position;
-  float loop_number;
+  int actual_position;
+  int max_position;
+  int loop_number;
 public:
-  float_circular_buffer(float buffer_size);
+  float_circular_buffer(int buffer_size);
   ~float_circular_buffer();
   /*lê valor na actual_position*/
   float read_actual_value();
   /*lê valor na posição n*/
-  float read_n_value(float n);
+  float read_n_value(int n);
   /*returna todos os valores no buffer mas apenas os novos por exemplo
   se tiver na volta 1 na posição 10 só retorna os valores de 1 ... 10*/
   std::vector<float> read_all_values();
