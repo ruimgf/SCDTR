@@ -1,5 +1,4 @@
 #include "int_circular_buffer.h"
-#include<memory>
 
 using namespace std;
 
@@ -14,20 +13,21 @@ int_circular_buffer::~int_circular_buffer(){
   delete [] buffer;
 }
 
-int read_actual_value(){
+int int_circular_buffer::read_actual_value(){
   return buffer[actual_position-1];
 }
 
-int read_n_value(int n){
+int int_circular_buffer::read_n_value(int n){
   if(n>=max_position){
-    return NULL;
+    return -10;
   }
   return buffer[n];
 }
 
-int* read_all_values(){
-  if(actual_position = 0){
-    return NULL;
+vector<int> int_circular_buffer::read_all_values(){
+  if(actual_position == 0){
+    vector<int> fifth;
+    return fifth;
   }
 
   if(loop_number == 0){
@@ -35,7 +35,8 @@ int* read_all_values(){
     for(int i =0;i<actual_position;i++){
       return_vector[i]=buffer[i];
     }
-    return return_vector;
+    vector<int> fifth (return_vector, return_vector + sizeof(return_vector) / sizeof(int) );
+    return fifth;
   }
 
     int return_vector [max_position];
@@ -49,10 +50,11 @@ int* read_all_values(){
       j=j+1;
     }
 
-    return return_vector;
+    vector<int> fifth (return_vector, return_vector + sizeof(return_vector) / sizeof(int) );
+    return fifth;
 }
 
-void insert_value(int value){
+void int_circular_buffer::insert_value(int value){
   if(actual_position < max_position){
     buffer[actual_position] = value;
     actual_position = actual_position +1;
