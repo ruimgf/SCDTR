@@ -59,6 +59,7 @@ void int_circular_buffer::insert_value(int value){
     buffer[actual_position] = value;
     actual_position = actual_position +1;
   }else{
+    loop_number = loop_number +1;
     actual_position = 0;
     buffer[actual_position] = value;
     actual_position = actual_position +1;

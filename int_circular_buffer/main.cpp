@@ -6,12 +6,13 @@
 using namespace std;
 
 int main(){
-  
+
   vector<int> fifth;
   int_circular_buffer buffer1{10};
 
-  buffer1.insert_value(10);
-  buffer1.insert_value(20);
+  for(int i =0;i<15;i++){
+    buffer1.insert_value(i);
+  }
 
   fifth = buffer1.read_all_values();
 
@@ -19,6 +20,7 @@ int main(){
   for (vector<int>::iterator it = fifth.begin(); it != fifth.end(); ++it)
     cout << ' ' << *it;
   cout << '\n';
+
 
 
 }
