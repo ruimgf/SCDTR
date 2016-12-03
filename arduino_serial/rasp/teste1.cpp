@@ -5,7 +5,6 @@ using namespace std;
 using namespace boost::asio;
 
 int main()	{
-  char str[4];
   io_service io;																//initialize services
   serial_port sp(io);								//create io object
   boost::system::error_code ec;
@@ -14,11 +13,12 @@ int main()	{
   //set baud rate
   sp.set_option(serial_port_base::baud_rate(115200),ec);
   if(	ec )	{
-    cout <<	"Error in SET BAUD";	return -1;
+    cout <<	"Error in SET";	return -1;
   }
   for	(;;)
   {
-    boost::asio::read(sp, boost::asio::buffer(str, 4));
+    boost::asio::streambuf str;
+    read_until(sp,	str,	'\n');
     cout <<	&str;
   }
 }
