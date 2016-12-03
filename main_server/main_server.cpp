@@ -26,10 +26,9 @@ void *thread_session(void* thread_arg){
   my_data = (thread_data*) thread_arg;
 
   while(1){
-
+      arduinos[my_data->arduino_id].read_state();
       pthread_mutex_lock(&cout_mutex);
       cout << "Thread:" << my_data->arduino_id << endl;
-      arduinos[my_data->arduino_id].read_state();
       arduinos[my_data->arduino_id].printvalues();
       pthread_mutex_unlock(&cout_mutex);
 
