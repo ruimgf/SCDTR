@@ -20,7 +20,7 @@ public:
   se tiver na volta 1 na posição 10 só retorna os valores de 1 ... 10*/
   int* read_all_values();
   /*insere valor na posição asseguir*/
-  void insert_value();
+  void insert_value(int value);
 
 
 }
