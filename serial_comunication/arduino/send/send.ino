@@ -76,7 +76,6 @@ void check_serial(){
 }
 
 void write_values(){
-
   Serial.print("l");
   Serial.println(lum);
 
@@ -86,7 +85,7 @@ void write_values(){
 }
 
 void loop(){
-
+  delay(100);
   if(Serial.available()>0){
     check_serial();
   }
