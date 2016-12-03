@@ -2,37 +2,57 @@
 #include <boost/asio.hpp>
 #include	<algorithm>
 #include	<vector>
-#include <cstdlib>
-#include <boost/bind.hpp>
-#include <boost/thread/thread.hpp>
-
 #include "raspduino.h"
 #include "defs.h"
+#include <cstdlib>
+#include <pthread.h>
+
+
+using namespace std;
+
+/*struct para passar dados para as threads na sua criação*/
+typedef struct thread_data{
+   int arduino_id;
+}thread_data;
 
 raspduino arduinos[NUMBER_ILLUM];
 
-using namespace std;
-using namespace boost::asio;
 
-void thread_session(int arduino_number){
+
+void *thread_session(void* thread_arg){
+
+  thread_data *my_data;
+
+  my_data = (thread_data*) thread_arg;
 
   while(1){
 
-      arduinos[arduino_number].read_state();
-      arduinos[arduino_number].printvalues();
+      arduinos[my_data->arduino_id].read_state();
+      arduinos[my_data->arduino_id].printvalues();
 
   }
 
-
+  pthread_exit(NULL);
 }
 
 
 int main(){
-  int i;
-  // replace for a system call ls searching for all ports avaliable
-  arduinos[0].init(PORT_ILLUM0);
-  
-  boost::thread t(boost::bind(thread_session,0));
+  pthreat_t threads[NUMBER_ILLUM];
+  thread_data td[NUMBER_ILLUM];
+  arduinos[0].init(PORT_ILLUM0); /*arduino 1;*/
+  arduinos[1].init(PORT_ILLUM1);
+  int rc;
 
-  t.join();
+  for(int i=0;i<NUMBER_ILLUM;i++){
+    td[i].arduino_id = i;
+    rc = pthread_create(&threads[i],NULL,thread_session,(void*)&td[i]);
+    if(rc){
+      cout << "ERROR CREATING THREAD" << rc << endl;
+      exit(-1);
+    }
+
+  }
+
+
+  pthread_exit(NULL);
 }

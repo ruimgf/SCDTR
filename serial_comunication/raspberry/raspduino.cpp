@@ -6,8 +6,6 @@
 using namespace std;
 using namespace boost::asio;
 
-
-
 raspduino::raspduino(){
 
 
@@ -32,27 +30,24 @@ void raspduino::init(string port){
     cout <<	"Error";
     exit(-1);
   }
-  sp.set_option(boost::asio::serial_port_base::character_size(8));
-  sp.set_option(boost::asio::serial_port_base::stop_bits(boost::asio::serial_port_base::stop_bits::one));
-  sp.set_option(boost::asio::serial_port_base::parity(boost::asio::serial_port_base::parity::none));
-  sp.set_option(boost::asio::serial_port_base::flow_control(boost::asio::serial_port_base::flow_control::none));
 
   sleep(2); // arduino reset when a connection is set, let wait a bit
 
   string str_start = "Who";
 
   write(sp,	boost::asio::buffer(str_start));
+  sleep(1);
+
   for	(;;)
   {
     boost::asio::streambuf str;
     string number;
-    string aux;
-    read(sp,boost::asio::buffer(aux,14));
+    read_until(sp,	str,	"\n");
     std::cout << "after read until" << '\n';
     std::ostringstream ss;
     ss << &str;
     string msa = ss.str();
-    std::cout << "texto " << msa;
+
     if (msa.compare(0,12,	"I am arduino")	== 0){
         number =  {msa,13};
         id = atoi( number.c_str() );
