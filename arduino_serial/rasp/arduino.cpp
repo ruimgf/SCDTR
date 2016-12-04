@@ -53,3 +53,5 @@ arduino::~arduino(){
   boost::system::error_code ec;
   sp.close(ec);
 }
+
+void arduino::retrive_control_loop_data();

@@ -29,6 +29,7 @@ class arduino{
   public:
     arduino(std::string);
     ~arduino();
+    void retrive_control_loop_data();
 
 
 };
