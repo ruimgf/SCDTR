@@ -1,5 +1,3 @@
-#include <iostream>
-#include <boost/asio.hpp>
 #include "arduino.h"
 
 using namespace std;
@@ -16,7 +14,8 @@ string arduino::read_serial(){
 }
 
 arduino::arduino(string port_name){
-  li[0] = li[1] = li[2] = 0;
+  lux[0] = lux[1] = lux[2] = 0;
+  duty = 0;
   E=0;
   V_f=0;
   C_e=0;
@@ -53,5 +52,17 @@ arduino::~arduino(){
   boost::system::error_code ec;
   sp.close(ec);
 }
-
-void arduino::retrive_control_loop_data();
+/*função que recolhe os dados do control loop*/
+void arduino::retrive_control_loop_data(){
+  string data;
+  /*lê duty*/
+  data = read_serial();
+  duty = stof(data);
+  last_duty.insert_value(duty);
+  /*lê lux*/
+  lux[2] = lux[1];
+  lux[1] = lux[0];
+  data = read_serial();
+  lux[0] = stof(data);
+  last_lum.insert_value(lux[0]);
+}

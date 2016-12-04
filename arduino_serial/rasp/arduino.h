@@ -14,7 +14,7 @@ class arduino{
   boost::asio::serial_port sp{io};
   int id;
   float duty;
-  float li[3]; // li[0] - li, li[1] - l_(i-1),li[2] - l_(i-2) // lux at time i
+  float lux[3]; // lux[0] - li, lux[1] - l_(i-1),lux[2] - l_(i-2) // lux at time i
   float E; // energy
   float V_f; // vflicker
   float C_e; // confort_error
