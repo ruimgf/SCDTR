@@ -6,7 +6,7 @@ using namespace boost::asio;
 /*lê dados de uma porta serial e retorna os dados numa std::string*/
 string arduino::read_serial(){
   boost::asio::streambuf data_boost_buffer;
-  read_until(sp,	data_boost_buffer,	"\n");
+  read_until(sp,	data_boost_buffer,	'\n');
   ostringstream data_buffer;
   data_buffer << &data_boost_buffer;
   string data = data_buffer.str();
@@ -42,9 +42,14 @@ arduino::arduino(string port_name){
   string str_start = "W";
   write(sp,	boost::asio::buffer(str_start));
   /*receive id*/
-  string data = read_serial();
-  id = stoi(data);
-  cout << id << endl;
+  try{
+    string data = read_serial();
+    id = stoi(data);
+    cout << "ID:"<<id << endl;
+  }catch(boost::system::system_error e){
+    cout<<e.what()<<endl;
+  }
+
 
 }
 
@@ -72,6 +77,7 @@ void arduino::retrive_control_loop_data(){
     /*envia notificação*/
     string str_start = "R";
     size_t bytes = write(sp,	boost::asio::buffer(str_start));
+    cout << "num_bytes:" << bytes << endl;
   }
   last_lum.insert_value(lux[0]);
 
