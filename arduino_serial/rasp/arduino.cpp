@@ -2,21 +2,20 @@
 #include <boost/asio.hpp>
 #include "arduino.h"
 
-
 using namespace std;
 using namespace boost::asio;
 
 /*lê dados de uma porta serial e retorna os dados numa std::string*/
-string arduino::read_serial(serial_port port){
+string arduino::read_serial(){
   boost::asio::streambuf data_boost_buffer;
-  read_until(sp,	data_buffer,	"\n");
+  read_until(sp,	data_boost_buffer,	"\n");
   ostringstream data_buffer;
   data_buffer << &data_boost_buffer;
   string data = data_buffer.str();
   return data;
 }
 
-arduino::arduino(string port){
+arduino::arduino(string port_name){
   li[0] = li[1] = li[2] = 0;
   E=0;
   V_f=0;
@@ -26,7 +25,7 @@ arduino::arduino(string port){
 
   //connect to	port
   boost::system::error_code ec;
-  sp.open(port,	ec);
+  sp.open(port_name,	ec);
   if(	ec ){
     cout <<	"Error";
     exit(-1);
@@ -44,7 +43,7 @@ arduino::arduino(string port){
   string str_start = "W";
   write(sp,	boost::asio::buffer(str_start));
   /*receive id*/
-  string data = read_serial(sp);
+  string data = read_serial();
   id = stoi(data);
   std::cout << id << endl;
 
