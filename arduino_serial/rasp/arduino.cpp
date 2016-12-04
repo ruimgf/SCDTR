@@ -58,6 +58,9 @@ void arduino::retrive_control_loop_data(){
   {
     string data = read_serial();
     duty = stof(data);
+    /*envia notificação*/
+    string str_start = "R";
+    write(sp,	boost::asio::buffer(str_start));
   }
   last_duty.insert_value(duty);
   /*lê lux*/
@@ -66,6 +69,9 @@ void arduino::retrive_control_loop_data(){
   {
     string data = read_serial();
     lux[0] = stof(data);
+    /*envia notificação*/
+    string str_start = "R";
+    write(sp,	boost::asio::buffer(str_start));
   }
   last_lum.insert_value(lux[0]);
 

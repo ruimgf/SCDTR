@@ -23,10 +23,13 @@ void setup() {
               break;
           }
     }
+    delay(1000);
 }
 
 void loop(){
   Serial.println(duty);
+  Serial.readString();
   Serial.println(lux);
+  Serial.readString();
   delay(10);
 }
