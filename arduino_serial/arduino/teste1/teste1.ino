@@ -6,11 +6,12 @@ bool occupancy = 1;
 int external_illu = 20;
 int illu = 30;
 int x;
+float start_time = 0.0;
 
 void setup() {
     Serial.begin(115200);
     /*setup serial*/
-    String challenge;
+    /*String challenge;
     while(1){
 
           if(Serial.available() > 0){
@@ -22,25 +23,18 @@ void setup() {
               Serial.println(ARDUINO_NUMBER);
               break;
           }
-    }
-    delay(1000);
+    }*/  
 }
 
 void loop(){
+  /*while(1){
+    if(Serial.available()>0){
+      Serial.read();
+      break;
+    }
+  }*/
   Serial.println(duty);
-  while(1){
-    if(Serial.available()>0){
-      Serial.read();
-      break;
-    }
-  }
   Serial.println(lux);
-  while(1){
-    if(Serial.available()>0){
-      Serial.read();
-      break;
-    }
-  }
-  Serial.println(micros());
-  delay(10);
+  Serial.println((float)(millis()));
+  Serial.flush();
 }
