@@ -36,5 +36,4 @@ void loop(){
   Serial.println(duty);
   Serial.println(lux);
   Serial.println((float)(millis()));
-  Serial.flush();
 }
