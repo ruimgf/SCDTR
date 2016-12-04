@@ -59,7 +59,7 @@ void arduino::retrive_control_loop_data(){
     string data = read_serial();
     duty = stof(data);
     /*envia notificação*/
-    string str_start = "R\n";
+    string str_start = "R";
     write(sp,	boost::asio::buffer(str_start));
   }
   last_duty.insert_value(duty);
@@ -70,8 +70,9 @@ void arduino::retrive_control_loop_data(){
     string data = read_serial();
     lux[0] = stof(data);
     /*envia notificação*/
-    string str_start = "R\n";
-    write(sp,	boost::asio::buffer(str_start));
+    string str_start = "R";
+    size_t bytes = write(sp,	boost::asio::buffer(str_start));
+    cout << "num_bytes:" << bytes << endl; 
   }
   last_lum.insert_value(lux[0]);
 
