@@ -31,5 +31,6 @@ void loop(){
   Serial.readString();
   Serial.println(lux);
   Serial.readString();
+  Serial.println(micros());
   delay(10);
 }

@@ -77,5 +77,10 @@ void arduino::retrive_control_loop_data(){
 
   cout << lux[0] << endl;
   cout << duty << endl;
+  /*lê timestamp1*/
+  {
+    string data = read_serial();
+    cout << "timestamp:" << data <<  endl;
+  }
 
 }
