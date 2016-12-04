@@ -72,7 +72,6 @@ void arduino::retrive_control_loop_data(){
     /*envia notificação*/
     string str_start = "R";
     size_t bytes = write(sp,	boost::asio::buffer(str_start));
-    cout << "num_bytes:" << bytes << endl; 
   }
   last_lum.insert_value(lux[0]);
 
