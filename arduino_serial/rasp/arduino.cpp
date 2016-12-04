@@ -44,7 +44,7 @@ arduino::arduino(string port_name){
   /*receive id*/
   string data = read_serial();
   id = stoi(data);
-  std::cout << id << endl;
+  cout << id << endl;
 
 }
 
@@ -65,4 +65,8 @@ void arduino::retrive_control_loop_data(){
   data = read_serial();
   lux[0] = stof(data);
   last_lum.insert_value(lux[0]);
+
+  cout << lux[0] << endl;
+  cout << duty << endl;
+
 }

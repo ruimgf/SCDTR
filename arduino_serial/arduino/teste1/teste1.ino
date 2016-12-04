@@ -22,9 +22,11 @@ void setup() {
               Serial.println(ARDUINO_NUMBER);
               break;
           }
+    }
 }
 
 void loop(){
   Serial.println(duty);
   Serial.println(lux);
+  delay(10);
 }
