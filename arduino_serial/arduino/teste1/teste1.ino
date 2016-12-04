@@ -30,14 +30,14 @@ void loop(){
   Serial.println(duty);
   while(1){
     if(Serial.available()>0){
-      Serial.readStringUntil('\n');
+      Serial.read();
       break;
     }
   }
   Serial.println(lux);
   while(1){
     if(Serial.available()>0){
-      Serial.readStringUntil('\n');
+      Serial.read();
       break;
     }
   }
