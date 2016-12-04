@@ -28,9 +28,9 @@ void setup() {
 
 void loop(){
   Serial.println(duty);
-  Serial.readString();
+  Serial.readStringUntil('\n');
   Serial.println(lux);
-  Serial.readString();
+  Serial.readStringUnti('\n');
   Serial.println(micros());
   delay(10);
 }
