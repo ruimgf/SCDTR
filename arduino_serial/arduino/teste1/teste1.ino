@@ -11,7 +11,7 @@ float start_time = 0.0;
 void setup() {
     Serial.begin(115200);
     /*setup serial*/
-    /*String challenge;
+    String challenge;
     while(1){
 
           if(Serial.available() > 0){
@@ -23,17 +23,20 @@ void setup() {
               Serial.println(ARDUINO_NUMBER);
               break;
           }
-    }*/  
+    }
 }
 
 void loop(){
-  /*while(1){
+  /*wait for pc to ask*/
+  while(1){
     if(Serial.available()>0){
       Serial.read();
       break;
     }
-  }*/
+  }
   Serial.println(duty);
   Serial.println(lux);
-  Serial.println((float)(millis()));
+  Serial.println((float)(micros()));
+  lux = lux + 1;
+  duty = duty + 10;
 }
