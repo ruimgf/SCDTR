@@ -12,6 +12,17 @@ void setup() {
 }
 
 void loop(){
-  delay(1000);
-  Serial.println("lum\n");
+  String challenge;
+  while(1){
+
+        if(Serial.available() > 0){
+          challenge = Serial.readString();
+        }
+
+        if (challenge == "W")
+        {
+            Serial.println(ARDUINO_NUMBER);
+            break;
+        }
+  }
 }
