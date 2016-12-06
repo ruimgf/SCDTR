@@ -1,3 +1,4 @@
+
 #include <iostream>
 #include <boost/asio.hpp>
 #include "raspduino.h"
@@ -6,9 +7,9 @@
 using namespace std;
 using namespace boost::asio;
 
-raspduino::raspduino(){
-
-
+raspduino::raspduino():
+        sp(io)
+{
   li[0] = li[1] = li[2] = 0;
   E=0;
   V_f=0;  C_e=0;
@@ -23,7 +24,7 @@ void raspduino::init(string port){
     cout <<	"Error";
     exit(-1);
   }
-  std::cout << "open port" << '\n';
+  
   sp.set_option(serial_port_base::baud_rate(115200),ec);
   if(	ec ){
     cout <<	"Error";
@@ -99,7 +100,7 @@ void raspduino::change_ocp(bool occupancy){
   }else{
     mensage += "N"; // not ocupate
   }
-  std::cout << mensage << '\n';
+  //std::cout << mensage << '\n';
 
   write(sp,	boost::asio::buffer(mensage));
 

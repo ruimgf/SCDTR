@@ -14,7 +14,7 @@ using namespace boost::asio;
 class raspduino{
   private:
   boost::asio::io_service io;
-  boost::asio::serial_port sp{io};
+  boost::asio::serial_port sp;
 
   int id;
   float li[3]; // li[0] - li, li[1] - l_(i-1),li[2] - l_(i-2) // lux at time i
