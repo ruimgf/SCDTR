@@ -86,9 +86,9 @@ void write_values(){
 }
 
 void loop(){
-
+  delay(1000);
   if(Serial.available()>0){
     check_serial();
   }
-  write_values();  
+  write_values();
 }
