@@ -2,7 +2,7 @@
 #include <boost/asio.hpp>
 #include	<algorithm>
 #include	<vector>
-#include "raspduino.h"
+#include "arduino.h"
 #include "defs.h"
 #include <cstdlib>
 #include <pthread.h>
@@ -15,7 +15,7 @@ typedef struct thread_data{
    int arduino_id;
 }thread_data;
 
-raspduino arduinos[NUMBER_ILLUM];
+arduino arduinos[NUMBER_ILLUM];
 pthread_mutex_t cout_mutex;
 
 
@@ -26,10 +26,9 @@ void *thread_session(void* thread_arg){
   my_data = (thread_data*) thread_arg;
 
   while(1){
-      arduinos[my_data->arduino_id].read_state();
       pthread_mutex_lock(&cout_mutex);
       cout << "Thread:" << my_data->arduino_id << endl;
-      arduinos[my_data->arduino_id].printvalues();
+      arduinos[my_data->arduino_id].retrive_control_loop_data();
       pthread_mutex_unlock(&cout_mutex);
 
   }
@@ -41,8 +40,8 @@ void *thread_session(void* thread_arg){
 int main(){
   pthread_t threads[NUMBER_ILLUM];
   thread_data td[NUMBER_ILLUM];
-  arduinos[0].init(PORT_ILLUM0); /*arduino 1;*/
-  arduinos[1].init(PORT_ILLUM1);
+  arduinos[0](PORT_ILLUM0); /*arduino 1;*/
+  arduinos[1](PORT_ILLUM1);
   int rc;
 
   for(int i=0;i<NUMBER_ILLUM;i++){
