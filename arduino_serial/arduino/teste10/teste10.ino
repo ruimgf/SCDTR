@@ -1,5 +1,5 @@
 
-int ARDUINO_NUMBER=1;
+int ARDUINO_NUMBER=2;
 float lux = 10;
 float duty = 255;
 bool occupancy = 1;

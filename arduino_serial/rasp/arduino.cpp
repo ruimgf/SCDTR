@@ -5,7 +5,6 @@
 
 using namespace std;
 
-
 arduino::arduino(string port_name)
   :ard(port_name)
   {
@@ -52,7 +51,7 @@ arduino::~arduino(){
 /*função que recolhe os dados do control loop*/
 void arduino::retrive_control_loop_data(){
   /*ask values*/
-    ard.Write("W");
+    /*ard.Write("W");
   /*lê duty*/
   {
     string data = ard.ReadLine(0,'\n');
@@ -68,12 +67,12 @@ void arduino::retrive_control_loop_data(){
   }
   last_lum.insert_value(lux[0]);
 
-  cout << lux[0] << endl;
-  cout << duty << endl;
+  cout << "id: "<< id << " " << lux[0] << endl;
+  cout << "id: "<< id << " " << duty << endl;
   /*lê timestamp1*/
   {
     string data = ard.ReadLine(0,'\n');
-    cout << "timestamp:" << data <<  endl;
+    cout<< "id:" << id << " timestamp:" << data <<  endl;
   }
 
 }
