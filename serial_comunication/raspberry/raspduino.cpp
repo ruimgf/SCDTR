@@ -11,8 +11,7 @@ raspduino::raspduino(){
 
   li[0] = li[1] = li[2] = 0;
   E=0;
-  V_f=0;
-  C_e=0;
+  V_f=0;  C_e=0;
   occupancy=0;
 }
 
@@ -31,29 +30,40 @@ void raspduino::init(string port){
     exit(-1);
   }
 
-  sleep(2); // arduino reset when a connection is set, let wait a bit
+  sleep(3); // arduino reset when a connection is set, let wait a bit
 
-  string str_start = "Who";
+  string str_start = "w";
 
   write(sp,	boost::asio::buffer(str_start));
   sleep(1);
-
   for	(;;)
   {
     boost::asio::streambuf str;
     string number;
-    read_until(sp,	str,	"\n");
+    try
+    {
+      read_until(sp,	str,	"\n");
+    }
+    catch (boost::system::system_error &e)
+    {
+        boost::system::error_code ec =	e.code();
+        std::cerr << "error in set:"<<	ec.value()	<<	std::endl;
+
+    }
+
     std::cout << "after read until" << '\n';
     std::ostringstream ss;
     ss << &str;
     string msa = ss.str();
 
-    if (msa.compare(0,12,	"I am arduino")	== 0){
-        number =  {msa,13};
+    if (msa.compare(0,1,	"A")	== 0){
+        number =  {msa,2};
         id = atoi( number.c_str() );
         break;
     }
+    //break;
   }
+
   std::cout << id << '\n';
 }
 
@@ -110,21 +120,37 @@ float raspduino::get_reference(){
    boost::asio::streambuf buf;
 
 
-     read_until(sp,	buf,	"\n");
+     try
+     {
+       read_until(sp,	buf,	"\n");
+     }
+     catch (boost::system::system_error &e)
+     {
+         boost::system::error_code ec =	e.code();
+         std::cout << "error:  " ;
+         std::cerr <<	ec.value()	<<	std::endl;
+     }
+
      ss << &buf;
+     string response = ss.str();
      if(ss.str().compare(0,1,	"l")==0){
-       string response_lum{ss.str(),1};
+       string response = ss.str();
+       int index =0;
+       for(int i=0;i<response.length();i++){
+         if(response[i]=='|'){
+           index=i;
+           break;
+         }
+       }
+       string response_lum{ss.str(),1,index-1};
+       string response_duty{ss.str(),index+1};
+
+       duty = atoi(response_duty.c_str());
        li[2] = li[1];
        li[1] = li[0];
        li[0] = atoi(response_lum.c_str());
-     }
+    }
 
-     read_until(sp,	buf,	"\n");
-     ss << &buf;
-     if(ss.str().compare(0,1,	"d")==0){
-       string response_duty{ss.str(),1};
-       duty = atoi(response_duty.c_str());
-     }
  }
 
  void raspduino::printvalues(){
