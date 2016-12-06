@@ -115,8 +115,16 @@ string process_data(string str ){
     response = "sucess";
   } else if(str[0]=='r'){
     // insert code to reset
+    response = "sucess";
   }
-  return response;
+  if(!response.empty()){
+
+    return response;
+  }else{
+    response = "error";
+    return response;
+  }
+
 }
 
 void tcp_server::attep_conn(){
