@@ -4,7 +4,7 @@
 #include <boost/asio.hpp>
 #include <thread>
 
-#include "tcp_server.h"
+#include "asynctcp.h"
 
 
 
@@ -12,29 +12,38 @@ using namespace boost::asio;
 using namespace std;
 using ip::tcp;
 
-tcp_server server1;
 
-
-void thread_session(){
-  while(1){
-    server1.attep_conn();
-  }
-
-}
-
-int main(){
-  std::cout << "go" << '\n';
-  std::thread t1{thread_session};
-  std::thread t2{thread_session};
-  std::thread t3{thread_session};
-
-
-
+void read_keyboard(){
   while (1) {
-    string str;
-    std::getline (std::cin,str);
-    if(str == "quit"){
-      break;
+    string command;
+    getline(std::cin,command);
+    if(command=="quit"){
+      exit(0);
     }
   }
+}
+
+int main(int argc, char* argv[])
+{
+
+  try
+  {
+    // if (argc != 2)
+    // {
+    //   std::cerr << "Usage: async_tcp_echo_server <port>\n";
+    //   return 1;
+    // }
+    std::thread t1{read_keyboard};
+    boost::asio::io_service io_service;
+
+    using namespace std; // For atoi.
+    tcp_server s(io_service, 17000);
+    io_service.run();
+  }
+  catch (std::exception& e)
+  {
+    std::cerr << "Exception: " << e.what() << "\n";
+  }
+
+  return 0;
 }
