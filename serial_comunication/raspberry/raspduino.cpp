@@ -16,73 +16,109 @@ raspduino::raspduino():
   occupancy=0;
 }
 
+std::string raspduino::readLine()
+    {
+        //Reading data char by char, code is optimized for simplicity, not speed
+        char c;
+        std::string result;
+        for(;;)
+        {
+            try{
+              boost::asio::read(sp,boost::asio::buffer(&c,1));
+              switch(c)
+              {
+                  case '\r':
+                      break;
+                  case '\n':
+                      return result;
+                  default:
+                      result+=c;
+              }
+            }catch (boost::system::system_error &e)
+            {
+                usleep(1000);
+            }
+
+        }
+    }
+
+
 void raspduino::init(string port){
+  serial_port_base::baud_rate BAUD(115200);
+  serial_port_base::flow_control FLOW( serial_port_base::flow_control::none );
+  serial_port_base::parity PARITY( serial_port_base::parity::none );
+  serial_port_base::stop_bits STOP( serial_port_base::stop_bits::one );
+  serial_port_base::character_size SIZE(8);
 
   boost::system::error_code ec;
   sp.open(port,	ec);				//connect to	port
   if(	ec ){
-    cout <<	"Error";
-    exit(-1);
-  }
-  
-  sp.set_option(serial_port_base::baud_rate(115200),ec);
-  if(	ec ){
-    cout <<	"Error";
+    cout <<	"Error Cannot Open Port" << endl;
     exit(-1);
   }
 
-  sleep(3); // arduino reset when a connection is set, let wait a bit
+  sp.set_option( BAUD );
+  sp.set_option( FLOW );
+  sp.set_option( PARITY );
+  sp.set_option( STOP );
+  sp.set_option( SIZE );
+
+  if(	ec ){
+    cout <<	"Error Cannot set baud_rate" << endl;
+    exit(-1);
+  }
+
+  usleep(3000000); // arduino reset when a connection is set, let wait a bit
+  /*flush port*/
 
   string str_start = "w";
-
   write(sp,	boost::asio::buffer(str_start));
-  sleep(1);
   for	(;;)
   {
-    boost::asio::streambuf str;
-    string number;
+    string data;
     try
     {
-      read_until(sp,	str,	"\n");
+      data = readLine();
     }
     catch (boost::system::system_error &e)
     {
         boost::system::error_code ec =	e.code();
-        std::cerr << "error in set:"<<	ec.value()	<<	std::endl;
-
+        std::cerr << "error in read setup:"<<	ec.message()	<<	std::endl;
     }
 
-    std::cout << "after read until" << '\n';
-    std::ostringstream ss;
-    ss << &str;
-    string msa = ss.str();
 
-    if (msa.compare(0,1,	"A")	== 0){
-        number =  {msa,2};
+
+    if (data.compare(0,1,	"A")	== 0){
+        string number;
+        number =  {data,2};
         id = atoi( number.c_str() );
         break;
-    }
-    //break;
+    } //break;
   }
 
   std::cout << id << '\n';
 }
 
 raspduino::~raspduino(){
-  boost::system::error_code ec;
-  sp.close(ec);
+  try
+  {
+    sp.close();
+  }
+  catch (boost::system::system_error &e)
+  {
+      boost::system::error_code ec =	e.code();
+      std::cerr << "error in close:"<<	ec.message()	<<	std::endl;
+
+  }
 }
 
 string raspduino::send_mensage(string str){
-
-  boost::asio::streambuf buf;
+  string data;
   write(sp,	boost::asio::buffer(str));
 
-  read_until(sp,	buf,	"\n");
+  data = readLine();
 
-  std::ostringstream ss;
-  ss << &buf;
-  return ss.str();
+  return data;
 
 }
 
@@ -117,25 +153,24 @@ float raspduino::get_reference(){
 }
 
  void raspduino::read_state(){
-   std::ostringstream ss;
-   boost::asio::streambuf buf;
+
+   string ss;
 
 
      try
      {
-       read_until(sp,	buf,	"\n");
+       ss = readLine();
      }
      catch (boost::system::system_error &e)
      {
          boost::system::error_code ec =	e.code();
-         std::cout << "error:  " ;
-         std::cerr <<	ec.value()	<<	std::endl;
+         std::cout << "error in read state:  " ;
+         std::cerr <<	ec.message()	<<	std::endl;
      }
 
-     ss << &buf;
-     string response = ss.str();
-     if(ss.str().compare(0,1,	"l")==0){
-       string response = ss.str();
+     string response = ss;
+     if(ss.compare(0,1,	"l")==0){
+       string response = ss;
        int index =0;
        for(int i=0;i<response.length();i++){
          if(response[i]=='|'){
@@ -143,8 +178,8 @@ float raspduino::get_reference(){
            break;
          }
        }
-       string response_lum{ss.str(),1,index-1};
-       string response_duty{ss.str(),index+1};
+       string response_lum{ss,1,index-1};
+       string response_duty{ss,index+1};
 
        duty = atoi(response_duty.c_str());
        li[2] = li[1];

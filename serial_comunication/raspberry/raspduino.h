@@ -16,6 +16,8 @@ class raspduino{
   boost::asio::io_service io;
   boost::asio::serial_port sp;
 
+  std::string readLine();
+
   int id;
   float li[3]; // li[0] - li, li[1] - l_(i-1),li[2] - l_(i-2) // lux at time i
   float E; // energy

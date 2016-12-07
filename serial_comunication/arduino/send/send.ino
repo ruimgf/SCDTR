@@ -20,7 +20,7 @@ void setup_serial(){
           }
         }
 
-      
+
   }
 
 }
@@ -79,7 +79,7 @@ void write_values(){
   Serial.print(lum);
   Serial.print("|");
   Serial.println(duty);
-  
+
 
 
 }
@@ -89,7 +89,7 @@ void loop(){
   if(Serial.available()>0){
     check_serial();
   }
-  
+
   write_values();
   duty=duty+1;
   delay(10);
