@@ -19,6 +19,7 @@ raspduino::raspduino():
 std::string raspduino::readLine()
     {
         //Reading data char by char, code is optimized for simplicity, not speed
+        int i = 0;
         char c;
         std::string result;
         for(;;)
@@ -34,10 +35,11 @@ std::string raspduino::readLine()
                   default:
                       result+=c;
               }
-            }catch (boost::system::system_error &e)
+            }catch (boost::system::system_error const& e)
             {
-                usleep(1000);
+                usleep(10);
             }
+
 
         }
     }
@@ -69,23 +71,17 @@ void raspduino::init(string port){
   }
 
   usleep(3000000); // arduino reset when a connection is set, let wait a bit
-  /*flush port*/
+  cout <<	"Bla" << endl;
 
   string str_start = "w";
   write(sp,	boost::asio::buffer(str_start));
   for	(;;)
   {
     string data;
-    try
-    {
-      data = readLine();
-    }
-    catch (boost::system::system_error &e)
-    {
-        boost::system::error_code ec =	e.code();
-        std::cerr << "error in read setup:"<<	ec.message()	<<	std::endl;
-    }
 
+    data = readLine();
+
+    cout <<	"bla2" << endl;
 
 
     if (data.compare(0,1,	"A")	== 0){
@@ -96,7 +92,7 @@ void raspduino::init(string port){
     } //break;
   }
 
-  std::cout << id << '\n';
+  std::cout << id << endl;
 }
 
 raspduino::~raspduino(){
