@@ -1,6 +1,2 @@
 read:
-	g++ -std=c++11 raspduino.cpp read.cpp -lpthread -lboost_system -o raspbian.o
-novotest:
-	g++ -std=c++11 raspduino.cpp novotest.cpp -lpthread -lboost_system -lserial -o test.o
-main:
-	g++ -std=c++11 raspduino.cpp main.cpp -lpthread -lboost_system -o main.o
+	g++ -std=c++11 arduino.cpp float_circular_buffer.cpp read.cpp -lpthread -lboost_system -o read.o -I.

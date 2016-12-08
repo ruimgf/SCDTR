@@ -1,16 +1,12 @@
+
 #include <boost/bind.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/enable_shared_from_this.hpp>
 #include <boost/asio.hpp>
 #include <thread>
-<<<<<<< HEAD
+
 
 #include "asynctcp.h"
-=======
-#include <boost/array.hpp>
-#include <memory>
-#include "tcp_server.h"
->>>>>>> master
 
 #include <iostream>
 
@@ -25,8 +21,11 @@ void read_keyboard(){
     string command;
     getline(std::cin,command);
     if(command=="quit"){
+      exit(0);
+    }
+  }
 
-
+}
 int main(int argc, char* argv[])
 {
 
