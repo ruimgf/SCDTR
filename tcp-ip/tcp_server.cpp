@@ -2,6 +2,8 @@
 #include <iostream>
 #include <boost/array.hpp>
 #include <boost/asio.hpp>
+#include <memory>
+
 
 
 using namespace std;
@@ -85,12 +87,12 @@ string process_data(string str ){
       response += " ";
       response += std::to_string(power[ilum_nr]);
       break;
-      case 'e':// error confirm essay
+      case 'c':// confort error
       if(str[4]=='T'){
         // insert code to total
         break;
       }
-      response += "e ";
+      response += "c ";
       response += str[4];
       response += " ";
       response += std::to_string(error_ac[ilum_nr]);
@@ -116,6 +118,21 @@ string process_data(string str ){
   } else if(str[0]=='r'){
     // insert code to reset
     response = "sucess";
+  }else if(str[0]=='b'){// last minute
+    string variable =  {str,2};
+    string aux =  {str,4};
+    int ilum_nr = atoi( aux.c_str() ) - 1;
+    if(variable[0] == 'd'){
+      // return duty
+    }else if(variable[0] == 'l'){
+      // return lumens
+    }
+
+  }else if(str[0]=='c'){// start stream real time
+
+
+  }else if(str[0]=='d'){
+      // stop stream real time
   }
   if(!response.empty()){
 
@@ -127,33 +144,22 @@ string process_data(string str ){
 
 }
 
-void tcp_server::attep_conn(){
+tcp::socket * tcp_server::attep_conn(){
 
   //create service socket
   boost::system::error_code err;
-  tcp::socket socket(io);
+  tcp::socket * socket = new tcp::socket(io);
   //wait client to	connect
-  acceptor.accept(socket);
-  std::cout << "accept" << '\n';
-  //client is accessing service
-  for (;;) {
-    boost::array <char,128>	buf;
-
-
-    size_t len =	socket.read_some(buffer(buf),	err);
-    if (err ==	error::eof)			break;	//	Closed cleanly by peer.
-    else if (err)		std::cout <<	"Unknown Error";
-
-    string question = buf.data();
-
-    string str;
-
-    std::cout.write(buf.data(),	len);
-
-    str = process_data(question);
-
-    write(socket,	buffer(str));
+  try
+  {
+    acceptor.accept(*socket);
   }
+  catch (boost::system::system_error &e)
+  {
+      boost::system::error_code ec =	e.code();
+      std::cerr << "error in set:"<<	ec.value()	<<	std::endl;
 
-
+  }
+  //client is accessing service
+  return socket;
 }
