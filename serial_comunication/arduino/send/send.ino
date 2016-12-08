@@ -14,13 +14,12 @@ void setup_serial(){
         if(Serial.available() > 0){
           challenge = Serial.readString();
           if(challenge == "w"){
-            Serial.print("A ");
             Serial.println(ARDUINO_NUMBER);
             break;
           }
         }
 
-      
+
   }
 
 }
@@ -79,7 +78,7 @@ void write_values(){
   Serial.print(lum);
   Serial.print("|");
   Serial.println(duty);
-  
+
 
 
 }
@@ -89,7 +88,7 @@ void loop(){
   if(Serial.available()>0){
     check_serial();
   }
-  
+
   write_values();
   duty=duty+1;
   delay(10);
