@@ -35,10 +35,10 @@ class arduino{
   float ref_lux;
 
   void timer_handler(const error_code& ec);
-  void write_handler_setup(const error_code& ec);
-  void dummy_read(const error_code& ec);
+  //void write_handler_setup(const error_code& ec);
+  //void dummy_read(const error_code& ec);
   void read_setup_handler(const error_code& ec);
-  void read_control_loop_handler(const error_code& ec);
+  //void read_control_loop_handler(const error_code& ec);
 
   public:
     arduino(io_service& io_,std::string port_name);

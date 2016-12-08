@@ -8,20 +8,7 @@ int x;
 int check=0;
 void setup_serial(){
   Serial.begin(115200);           // start serial for output
-  String challenge;
-  while(1){
-
-        if(Serial.available() > 0){
-          challenge = Serial.readString();
-          if(challenge == "w"){
-            Serial.println(ARDUINO_NUMBER);
-            break;
-          }
-        }
-
-
-  }
-
+  Serial.println(ARDUINO_NUMBER);
 }
 
 void setup() {
@@ -77,7 +64,9 @@ void write_values(){
   Serial.print("l");
   Serial.print(lum);
   Serial.print("|");
-  Serial.println(duty);
+  Serial.print(duty);
+  Serial.print("|");
+  Serial.println(micros());
 
 
 

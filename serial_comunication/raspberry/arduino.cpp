@@ -1,5 +1,18 @@
 #include "arduino.h"
 
+typedef boost::asio::buffers_iterator<
+    boost::asio::streambuf::const_buffers_type> iterator;
+
+std::pair<iterator, bool>
+match_whitespace(iterator begin, iterator end)
+{
+  iterator i = begin;
+  while (i != end)
+    if ((*i++)=='\n')
+      return std::make_pair(i, true);
+  return std::make_pair(i, false);
+}
+
 arduino::arduino(io_service& io_,std::string port_name)
 : io(io_),
   sp(io),
@@ -21,7 +34,7 @@ arduino::arduino(io_service& io_,std::string port_name)
     std::cerr<<"ERROR:initialization of serial port "<<ec.message()<<std::endl;
   }
   /*timer to wait arduino to reset*/
-  tim_setup.expires_from_now(boost::posix_time::seconds(5));
+  tim_setup.expires_from_now(boost::posix_time::seconds(2));
   tim_setup.async_wait( boost::bind(&arduino::timer_handler, this
     ,boost::asio::placeholders::error) );
 
@@ -34,29 +47,32 @@ arduino::~arduino()
 
 void arduino::timer_handler(const error_code& ec)
 {
-  std::ostringstream os;
-  os << "w" ;
-  /*escreve W para o arduino para sair do setup*/
-  async_write( sp, buffer(os.str()) ,
-  boost::bind(&arduino::write_handler_setup, this,
-  boost::asio::placeholders::error) );
+  //std::ostringstream os;
+  //os << "w" ;
+  //escreve W para o arduino para sair do setup
+  async_read_until(sp, read_buf, match_whitespace, boost::bind(&arduino::read_setup_handler,
+    this, boost::asio::placeholders::error) );
 
 
 }
 
+
+
+
+/*
 void arduino::write_handler_setup(const error_code& ec)
 {
-  /*faz read assync da resposta do arduino*/
+  //faz read assync da resposta do arduino
   tim_setup.expires_from_now(boost::posix_time::seconds(2));
   tim_setup.async_wait( boost::bind(&arduino::dummy_read, this
     ,boost::asio::placeholders::error) );
-}
+}*/
 
-void arduino::dummy_read(const error_code& ec)
+/*void arduino::dummy_read(const error_code& ec)
 {
   async_read_until(sp, read_buf, '\n', boost::bind(&arduino::read_setup_handler,
     this, boost::asio::placeholders::error) );
-}
+}*/
 
 void arduino::read_setup_handler(const error_code& ec)
 {
@@ -66,6 +82,14 @@ void arduino::read_setup_handler(const error_code& ec)
 
   std::istream is(&read_buf);
   std::getline(is, id_data);
-  std::cout << id_data << std::endl;
+
+  if(id_data.length()>1){
+    std::cout << id_data << std::endl;
+  }
+
+  tim_setup.expires_from_now(boost::posix_time::millisec(10));
+  tim_setup.async_wait( boost::bind(&arduino::timer_handler, this
+    ,boost::asio::placeholders::error) );
+
 
 }
