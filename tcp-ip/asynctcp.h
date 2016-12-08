@@ -26,16 +26,18 @@ private:
   enum { max_length = 1024 };
   char question_[max_length];
   std::string response_;
+  std::vector <arduino&> arduino;
 };
 
 class tcp_server
 {
 public:
-  tcp_server(boost::asio::io_service& io_service, short port);
+  tcp_server(boost::asio::io_service& io_service, short port, std::vector <arduino&> arduino);
   void handle_accept(tcp_session* new_session,const boost::system::error_code& error);
 private:
   boost::asio::io_service& io_service_;
   tcp::acceptor acceptor_;
+  std::vector <arduino&> arduino;
 };
 
 

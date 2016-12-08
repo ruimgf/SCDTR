@@ -1,13 +1,15 @@
 int ARDUINO_NUMBER=1;
-int lum = 10;
+float lum = 10;
 int duty = 255;
 bool occupancy = 1;
 int external_illu = 20;
 int illu = 30;
 int x;
 int check=0;
+
 void setup_serial(){
-  Serial.begin(115200);           // start serial for output
+  Serial.begin(115200);
+  Serial.print("arduino");
   Serial.println(ARDUINO_NUMBER);
 }
 
@@ -64,11 +66,7 @@ void write_values(){
   Serial.print("l");
   Serial.print(lum);
   Serial.print("|");
-  Serial.print(duty);
-  Serial.print("|");
-  Serial.println(micros());
-
-
+  Serial.println(duty);
 
 }
 
