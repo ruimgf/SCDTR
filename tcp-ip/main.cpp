@@ -3,9 +3,14 @@
 #include <boost/enable_shared_from_this.hpp>
 #include <boost/asio.hpp>
 #include <thread>
+<<<<<<< HEAD
+
+#include "asynctcp.h"
+=======
 #include <boost/array.hpp>
 #include <memory>
 #include "tcp_server.h"
+>>>>>>> master
 
 #include <iostream>
 
@@ -14,63 +19,35 @@ using namespace boost::asio;
 using namespace std;
 using ip::tcp;
 
-tcp_server server1;
 
-
-void keyboard(){
+void read_keyboard(){
   while (1) {
-    string str;
-    std::getline (std::cin,str);
-    if(str == "quit"){
-      exit(0);
-    }
+    string command;
+    getline(std::cin,command);
+    if(command=="quit"){
+
+
+int main(int argc, char* argv[])
+{
+
+  try
+  {
+    // if (argc != 2)
+    // {
+    //   std::cerr << "Usage: async_tcp_echo_server <port>\n";
+    //   return 1;
+    // }
+    std::thread t1{read_keyboard};
+    boost::asio::io_service io_service;
+
+    using namespace std; // For atoi.
+    tcp_server s(io_service, 17000);
+    io_service.run();
   }
-}
-
-void attep_client(tcp::socket * socket){
-  tcp::socket * socket1 = socket;
-  //std::cout << "in" << '\n';
-  for (;;) {
-    boost::array <char,128>	buf;
-    boost::system::error_code err;
-
-    //std::cout << "go read" << '\n';
-    size_t len;
-    try{
-
-      len =	socket1->read_some(buffer(buf),	err);
-
-    }catch(boost::system::system_error &e){
-
-      boost::system::error_code ec =	e.code();
-      std::cerr << "error in set:"<<	ec.value()	<<	std::endl;
-
-    }
-
-    if (err ==	error::eof)			break;	//	Closed cleanly by peer.
-    else if (err)		std::cout <<	"Unknown Error";
-    //std::cout << "after read" << '\n';
-    string question = buf.data();
-
-    string str;
-
-    std::cout.write(buf.data(),	len);
-
-    str = process_data(question);
-    write(*socket1,	buffer(str));
+  catch (std::exception& e)
+  {
+    std::cerr << "Exception: " << e.what() << "\n";
   }
 
-
-}
-
-int main(){
-  std::cout << "go" << '\n';
-  std::thread t1{keyboard};
-  //t1.detach();
-  while (1) {
-    // mutex de guarda
-    tcp::socket * socket = server1.attep_conn();
-    std::thread t1{attep_client,socket};
-    t1.detach();
-  }
+  return 0;
 }
