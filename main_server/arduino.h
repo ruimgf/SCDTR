@@ -51,6 +51,7 @@ class arduino{
     bool get_occupancy();
     float get_current_duty();
     float get_reference();
+    float get_low_lux();
     float get_power();
     float get_energy();
     float get_error_confort();

@@ -118,7 +118,7 @@ void arduino::read_handler(const error_code& ec)
       save_value(std::stoi(clean_duty)/255.0,std::stof(clean_lux),millis);
 
 
-      tim_setup.expires_from_now(boost::posix_time::millisec(10));
+      tim_setup.expires_from_now(boost::posix_time::millisec(11));
       tim_setup.async_wait( boost::bind(&arduino::timer_handler, this
         ,boost::asio::placeholders::error) );
       return;
@@ -188,6 +188,10 @@ void arduino::write_ocp_handler(const error_code& ec){
 
 float arduino::get_current_lux(){
       return last_lux.read_actual_value();
+}
+
+float arduino::get_low_lux(){
+      return lower_lux;
 }
 
 float arduino::get_current_duty(){

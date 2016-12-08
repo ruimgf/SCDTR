@@ -1,27 +1,16 @@
 int ARDUINO_NUMBER=1;
-int lum = 10;
+float lum = 10;
 int duty = 255;
 bool occupancy = 1;
 int external_illu = 20;
 int illu = 30;
 int x;
 int check=0;
+
 void setup_serial(){
-  Serial.begin(115200);           // start serial for output
-  String challenge;
-  while(1){
-
-        if(Serial.available() > 0){
-          challenge = Serial.readString();
-          if(challenge == "w"){
-            Serial.println(ARDUINO_NUMBER);
-            break;
-          }
-        }
-
-
-  }
-
+  Serial.begin(115200);
+  Serial.print("arduino");
+  Serial.println(ARDUINO_NUMBER);
 }
 
 void setup() {
@@ -78,8 +67,6 @@ void write_values(){
   Serial.print(lum);
   Serial.print("|");
   Serial.println(duty);
-
-
 
 }
 
