@@ -7,9 +7,10 @@ using namespace std;
 using namespace boost::asio;
 
 io_service ard1_service;
+io_service ard2_service;
 boost::asio::io_service io_tcp;
-arduino * ard1 (new arduino{ard1_service,"/dev/ttyACM0"});
-
+shared_ptr <arduino> ard1 (new arduino{ard1_service,"/dev/ttyACM0"});
+//shared_ptr <arduino> ard2 (new arduino{ard2_service,"/dev/ttyACM1"});
 void read_keyboard(){
   while (1) {
     string command;
@@ -17,17 +18,31 @@ void read_keyboard(){
     if(command=="quit"){
       exit(0);
     }
-    /*
+
     if(command=="c"){
-      ard1.change_ocp(0);
-    }*/
+     std::cout << ard1->get_current_lux() << '\n';
+    }
   }
 }
 void tcp(){
   try
   {
-    tcp_server s(io_tcp, 17000,ard1);
+    tcp_server s(io_tcp, 17000);
+    s.attacharduino(ard1);
+    //s.attacharduino(ard2);
+    s.start_accept();
     io_tcp.run();
+  }
+  catch (std::exception& e)
+  {
+    std::cerr << "Exception: " << e.what() << "\n";
+  }
+}
+
+void ard(){
+  try
+  {
+    ard2_service.run();
   }
   catch (std::exception& e)
   {
@@ -39,5 +54,6 @@ void tcp(){
 int main(){
     std::thread t1{read_keyboard};
     std::thread t2{tcp};
+    //std::thread t3{ard};
     ard1_service.run();
 }

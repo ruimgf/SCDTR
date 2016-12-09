@@ -1,4 +1,4 @@
-int ARDUINO_NUMBER=1;
+int ARDUINO_NUMBER=2;
 float lum = 10;
 int duty = 255;
 bool occupancy = 1;

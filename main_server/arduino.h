@@ -13,11 +13,14 @@
 
 using namespace boost::asio;
 using namespace boost::system;
+using boost::asio::ip::tcp;
 
 class arduino{
   private:
   boost::asio::io_service& io;
   boost::asio::serial_port sp;
+  //tcp::socket& stream_duty;
+  //tcp::socket& stream_lux;
   boost::asio::deadline_timer tim_setup;
   boost::asio::streambuf read_buf;
   std::chrono::time_point<std::chrono::system_clock> begin_time;
@@ -37,11 +40,11 @@ class arduino{
   float_circular_buffer last_ts;//sotres last minuit history of ts;
   float ref_lux;
 
-  void timer_handler(const error_code& ec);
-  void read_setup_handler(const error_code& ec);
-  void begin_timer_handler(const error_code& ec);
-  void read_handler(const error_code& ec);
-  void write_ocp_handler(const error_code& ec);
+  void timer_handler(const boost::system::error_code& ec);
+  void read_setup_handler(const boost::system::error_code& ec);
+  void begin_timer_handler(const boost::system::error_code& ec);
+  void read_handler(const boost::system::error_code& ec);
+  void write_ocp_handler(const boost::system::error_code& ec);
   void save_value(float duty_mes, float lux_mes, int time_stamp);
   public:
     arduino(io_service& io_,std::string port_name);
@@ -55,6 +58,8 @@ class arduino{
     float get_power();
     float get_energy();
     float get_error_confort();
+    float get_variance();
+    //void attachstreamduty(tcp_session s);
 };
 
 #endif //ARDUN

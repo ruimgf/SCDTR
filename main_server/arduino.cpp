@@ -35,13 +35,13 @@ arduino::~arduino()
   sp.close();
 }
 
-void arduino::begin_timer_handler(const error_code& ec)
+void arduino::begin_timer_handler(const boost::system::error_code& ec)
 {
   async_read_until(sp, read_buf, "\n", boost::bind(&arduino::read_setup_handler,
     this, boost::asio::placeholders::error) );
 }
 
-void arduino::timer_handler(const error_code& ec)
+void arduino::timer_handler(const boost::system::error_code& ec)
 {
   //std::ostringstream os;
   //os << "w" ;
@@ -55,7 +55,6 @@ void arduino::save_value(float duty_mes, float lux_mes, int time_stamp){
 
   last_lux.insert_value(lux_mes);
   last_duty.insert_value(duty_mes);
-
   last_ts.insert_value(time_stamp);
 
 
@@ -86,16 +85,27 @@ void arduino::save_value(float duty_mes, float lux_mes, int time_stamp){
       V_f = V_f/(N*SAMPLE_TIME/1000);
 
   }
+  /*
+  if(stream_duty.size()>0){
+    for(int i = 0; i<stream_duty.size();i++ ){
+      std::string response_ = "estou a stremar";
+    // este write talvez possa ser transferido para o call back do write do set
+    // boost::asio::async_write(stream_duty[i],
+    //     boost::asio::buffer(response_, response_.length()),
+    //     boost::bind(&arduino::write_ocp_handler, this,
+    //       boost::asio::placeholders::error));
+    }
+  }
+  */
 
-
-  std::cout << "lux: "<< last_lux.read_actual_value() << std::endl;
-  std::cout << "duty: "<< last_duty.read_actual_value() << std::endl;
-  std::cout << "ts : "<< last_ts.read_actual_value() << std::endl;
+  //std::cout << "lux: "<< last_lux.read_actual_value() << std::endl;
+  //std::cout << "duty: "<< last_duty.read_actual_value() << std::endl;
+  //std::cout << "ts : "<< last_ts.read_actual_value() << std::endl;
 
 
 }
 
-void arduino::read_handler(const error_code& ec)
+void arduino::read_handler(const boost::system::error_code& ec)
 {
   /*read the values present in buffer*/
   std::string data;
@@ -134,7 +144,7 @@ void arduino::read_handler(const error_code& ec)
 
 }
 
-void arduino::read_setup_handler(const error_code& ec)
+void arduino::read_setup_handler(const boost::system::error_code& ec)
 {
   /*read the values present in buffer*/
   std::string id_data;
@@ -180,7 +190,7 @@ void arduino::change_ocp(bool change_ocp){
 }
 
 
-void arduino::write_ocp_handler(const error_code& ec){
+void arduino::write_ocp_handler(const boost::system::error_code& ec){
   // do noting
 
 }
@@ -216,3 +226,11 @@ float arduino::get_energy(){
 float arduino::get_error_confort(){
   return C_e;
 }
+
+float arduino::get_variance(){
+      return V_f;
+}
+
+//void arduino::attachstreamduty(tcp_session s){
+  //stream_duty = s.socket() ;
+//}
