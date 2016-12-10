@@ -5,4 +5,7 @@ server:
 	g++ -std=c++11 main.cpp tcp_server.cpp -lpthread -lboost_system -o tcp_server.o -I/usr/local/include/ -L/usr/local/lib -I.
 
 client:
-	g++ -std=c++11 client.cpp -lpthread -lboost_system -o tcp_client.o -I/usr/local/include/ -L/usr/local/lib -I.
+	g++ -std=c++11 client.cpp -lpthread -lboost_thread -lboost_system -o tcp_client.o -I.
+
+async_client:
+	g++ -std=c++11 asynclient.cpp -lpthread -lboost_system -o tcpasync_client.o -I/usr/local/include/ -L/usr/local/lib -I.
