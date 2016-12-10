@@ -35,9 +35,14 @@ char response[10000];
 void handle_read(const boost::system::error_code& error,size_t bytes_transferred){
   string saida{response,0,bytes_transferred};
   std::cout << saida << '\n';
-
+  if (!error)
+  {
   socket_.async_read_some(boost::asio::buffer(response,10000),
         &handle_read);
+  }else{
+    std::cout << "connection fail" << '\n';
+    exit(0);
+  }
 }
 
 

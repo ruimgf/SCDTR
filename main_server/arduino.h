@@ -25,7 +25,6 @@ class arduino{
   std::vector<tcp_session *> cli_stream_duty;
   std::vector<tcp_session *> cli_stream_lux;
   std::chrono::time_point<std::chrono::system_clock> begin_time;
-  int id;
   unsigned long int N = 0;
   float ts; //indicates the # of the current sample;
   float duty;
@@ -48,6 +47,7 @@ class arduino{
   void write_ocp_handler(const boost::system::error_code& ec);
   void save_value(float duty_mes, float lux_mes, int time_stamp);
   public:
+    int id;
     arduino(io_service& io_,std::string port_name);
     ~arduino();
     void change_ocp(bool);

@@ -52,18 +52,20 @@ int main(int argc, char *argv[]){
       exit(0);
     }
     shared_ptr <arduino> ard1 (new arduino{ard1_service,argv[1]});
-    //shared_ptr <arduino> ard2 (new arduino{ard2_service,argv[2]});
+    shared_ptr <arduino> ard2 (new arduino{ard2_service,argv[2]});
     ard.push_back(ard1);
-    //ard.push_back(ard2);
+    ard.push_back(ard2);
     std::thread t1{ard_thread_1};
-    //std::thread t2{ard_thread,ard2_service};
+    std::thread t2{ard_thread_2};
     std::thread t3{tcp};
-    //std::thread t3{ard};
     //ard1_service.run();
     while (1) {
       string command;
       getline(std::cin,command);
       if(command=="quit"){
+        io_tcp.stop();
+        ard1_service.stop();
+        ard2_service.stop();
         exit(0);
       }
 

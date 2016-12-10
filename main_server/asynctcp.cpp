@@ -263,30 +263,34 @@ void tcp_session::handle_write(const boost::system::error_code& error){
 }
 
 void tcp_session::stream_duty(float duty,unsigned long int time_stamp, int id){
-  response_ = "c d ";
-  response_ += std::to_string(id);
-  response_ += std::to_string(duty);
-  response_ += " ";
-  response_ += std::to_string(time_stamp);
+  mtx.lock();
+  response_stream_duty = "c d ";
+  response_stream_duty += std::to_string(id);
+  response_stream_duty += " ";
+  response_stream_duty += std::to_string(duty);
+  response_stream_duty += " ";
+  response_stream_duty += std::to_string(time_stamp);
   boost::asio::async_write(socket_,
-      boost::asio::buffer(response_, response_.length()),
+      boost::asio::buffer(response_stream_duty, response_stream_duty.length()),
       boost::bind(&tcp_session::handle_write, this,
         boost::asio::placeholders::error));
-
+  mtx.unlock();
 }
 
 
 void tcp_session::stream_lux(float lux,unsigned long int time_stamp, int id){
-  response_ = "c l ";
-  response_ += std::to_string(id);
-  response_ += " ";
-  response_ += std::to_string(lux);
-  response_ += " ";
-  response_ += std::to_string(time_stamp);
+  mtx.lock();
+  response_stream_lux = "c l ";
+  response_stream_lux += std::to_string(id);
+  response_stream_lux += " ";
+  response_stream_lux += std::to_string(lux);
+  response_stream_lux += " ";
+  response_stream_lux += std::to_string(time_stamp);
   boost::asio::async_write(socket_,
-      boost::asio::buffer(response_, response_.length()),
+      boost::asio::buffer(response_stream_lux, response_stream_lux.length()),
       boost::bind(&tcp_session::handle_write_stream, this,
         boost::asio::placeholders::error));
+  mtx.unlock();
 }
 
 void tcp_session::handle_write_stream(const boost::system::error_code& error){

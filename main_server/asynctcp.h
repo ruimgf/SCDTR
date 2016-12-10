@@ -4,7 +4,7 @@
 #include <iostream>
 #include <boost/bind.hpp>
 #include <boost/asio.hpp>
-
+#include <mutex>
 
 using namespace boost::asio;
 using boost::asio::ip::tcp;
@@ -29,11 +29,13 @@ private:
   string process_c(char str[] );
   string process_d(char str[] );
   string process_reset(char str[] );
-
+  std::mutex mtx;
   tcp::socket socket_;
   enum { max_length = 1024 };
   char question_[max_length];
   std::string response_;
+  std::string response_stream_lux;
+  std::string response_stream_duty;
 };
 
 class tcp_server
