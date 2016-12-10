@@ -234,3 +234,22 @@ std::vector<float> arduino::get_oneminute_duty(){
 std::vector<float> arduino::get_oneminute_lux(){
       return last_lux.read_all_values();
 }
+
+void arduino::attachclistream_duty(tcp_session* cli){
+    cli_stream_duty.push_back(cli);
+}
+
+void arduino::attachclistream_lux(tcp_session* cli){
+    cli_stream_lux.push_back(cli);
+}
+
+void detachclistream_lux(tcp_session*){
+    
+
+}
+
+void detachclistream_duty(tcp_session*){
+
+
+
+}

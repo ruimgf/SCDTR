@@ -157,12 +157,13 @@ void tcp_session::handle_read(const boost::system::error_code& error,size_t byte
       string number{question_[4]};
       int ilum_nr = stoi( number.c_str() ) - 1;
       if(question_[2]=='l'){
-        //response_ = process_lastminute(question_);
-        cli_stream_lux.push_back(this);
+        ard.at(ilum_nr)-> attachclistream_lux(this);  
+        socket_.async_read_some(boost::asio::buffer(question_, max_length),
+            boost::bind(&tcp_session::handle_read, this,
+              boost::asio::placeholders::error,
+              boost::asio::placeholders::bytes_transferred));
       }else if(question_[2]=='d'){
-        //response_ = process_lastminute(question_);
-        //a[ilum_nr]->attachstreamduty(socket_);
-        cli_stream_duty.push_back(this);
+        ard.at(ilum_nr)-> attachclistream_duty(this);
         socket_.async_read_some(boost::asio::buffer(question_, max_length),
             boost::bind(&tcp_session::handle_read, this,
               boost::asio::placeholders::error,

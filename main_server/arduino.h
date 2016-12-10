@@ -22,6 +22,8 @@ class arduino{
   boost::asio::serial_port sp;
   boost::asio::deadline_timer tim_setup;
   boost::asio::streambuf read_buf;
+  std::vector<tcp_session *> cli_stream_duty;
+  std::vector<tcp_session *> cli_stream_lux;
   std::chrono::time_point<std::chrono::system_clock> begin_time;
   int id;
   unsigned long int N = 0;
@@ -60,6 +62,11 @@ class arduino{
     float get_energy();
     float get_error_confort();
     float get_variance();
+    void attachclistream_lux(tcp_session*);
+    void attachclistream_duty(tcp_session*);
+    void detachclistream_lux(tcp_session*);
+    void detachclistream_duty(tcp_session*);
+
 };
 
 #endif //ARDUN

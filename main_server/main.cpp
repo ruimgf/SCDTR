@@ -7,8 +7,6 @@
 using namespace std;
 using namespace boost::asio;
 std::vector<std::shared_ptr <arduino>> ard;
-std::vector<tcp_session *> cli_stream_lux;
-
 
 io_service ard1_service;
 io_service ard2_service;
