@@ -7,6 +7,7 @@
 #include "float_circular_buffer.h"
 #include <boost/bind.hpp>
 #include <chrono>
+#include "globals.h"
 
 #define DEFAULT_OCCUP_LUX_REF 20;
 #define DEFAULT_UNCUP_LUX_REF 10;

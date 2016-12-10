@@ -154,15 +154,15 @@ void tcp_session::handle_read(const boost::system::error_code& error,size_t byte
 
 
     }else if(question_[0]=='c'){
-      string number{question_[2]};
+      string number{question_[4]};
       int ilum_nr = stoi( number.c_str() ) - 1;
       if(question_[2]=='l'){
         //response_ = process_lastminute(question_);
-
-
+        cli_stream_lux.push_back(this);
       }else if(question_[2]=='d'){
         //response_ = process_lastminute(question_);
         //a[ilum_nr]->attachstreamduty(socket_);
+        cli_stream_duty.push_back(this);
         socket_.async_read_some(boost::asio::buffer(question_, max_length),
             boost::bind(&tcp_session::handle_read, this,
               boost::asio::placeholders::error,
@@ -202,14 +202,47 @@ void tcp_session::handle_write(const boost::system::error_code& error){
   }
 }
 
+void tcp_session::stream_duty(float duty,unsigned long int time_stamp){
+  response_ = "c d 1 ";
+  response_ += std::to_string(duty);
+  response_ += " ";
+  response_ += std::to_string(time_stamp);
+  boost::asio::async_write(socket_,
+      boost::asio::buffer(response_, response_.length()),
+      boost::bind(&tcp_session::handle_write, this,
+        boost::asio::placeholders::error));
 
+}
+
+
+void tcp_session::stream_lux(float lux,unsigned long int time_stamp){
+  response_ = "c l 1 ";
+  response_ += std::to_string(lux);
+  response_ += " ";
+  response_ += std::to_string(time_stamp);
+  boost::asio::async_write(socket_,
+      boost::asio::buffer(response_, response_.length()),
+      boost::bind(&tcp_session::handle_write_stream, this,
+        boost::asio::placeholders::error));
+}
+
+void tcp_session::handle_write_stream(const boost::system::error_code& error){
+  if (!error)
+  {
+
+  }
+  else
+  {
+    delete this;
+  }
+}
 
 // tcp_server
 tcp_server::tcp_server(boost::asio::io_service& io_service, short port)
   : io_service_(io_service),
     acceptor_(io_service, tcp::endpoint(tcp::v4(), port))
 {
-  tcp_session* new_session = new tcp_session(io_service_);
+  tcp_session * new_session = new tcp_session(io_service_);
   acceptor_.async_accept(new_session->socket(),
       boost::bind(&tcp_server::handle_accept, this, new_session,
         boost::asio::placeholders::error));

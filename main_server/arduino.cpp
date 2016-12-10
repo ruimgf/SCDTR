@@ -86,18 +86,13 @@ void arduino::save_value(float duty_mes, float lux_mes, int time_stamp){
       V_f = V_f/(N*SAMPLE_TIME/1000);
 
   }
-  /*
-  if(stream_duty.size()>0){
-    for(int i = 0; i<stream_duty.size();i++ ){
-      std::string response_ = "estou a stremar";
-    // este write talvez possa ser transferido para o call back do write do set
-    // boost::asio::async_write(stream_duty[i],
-    //     boost::asio::buffer(response_, response_.length()),
-    //     boost::bind(&arduino::write_ocp_handler, this,
-    //       boost::asio::placeholders::error));
+
+  if(cli_stream_duty.size()>0){
+    for(int i = 0; i<cli_stream_duty.size();i++ ){
+      cli_stream_duty.at(i)->stream_duty(duty_mes,time_stamp);
     }
   }
-  */
+
 
   //std::cout << "lux: "<< last_lux.read_actual_value() << std::endl;
   //std::cout << "duty: "<< last_duty.read_actual_value() << std::endl;

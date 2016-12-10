@@ -20,6 +20,9 @@ public:
   void handle_read(const boost::system::error_code& error,size_t bytes_transferred);
   void handle_write(const boost::system::error_code& error);
   string process_get(char str[]);
+  void stream_duty(float duty,unsigned long int time_stamp);
+  void stream_lux(float lux,unsigned long int time_stamp);
+  void handle_write_stream(const boost::system::error_code& error);
 private:
   tcp::socket socket_;
   enum { max_length = 1024 };
