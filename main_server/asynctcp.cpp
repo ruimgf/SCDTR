@@ -24,7 +24,6 @@ std::string tcp_session::process_get(char str[] ){
   response += " ";
   switch (str[2]) {
     case 'l': // lumens
-    //response += a->get_current_lux();
     response += std::to_string(ard.at(ilum_nr)->get_current_lux());
     break;
 
@@ -57,6 +56,7 @@ std::string tcp_session::process_get(char str[] ){
       response += std::to_string(total);
       break;
     }
+
     response += std::to_string(ard.at(ilum_nr)->get_power());
     break;
 
@@ -101,6 +101,99 @@ std::string tcp_session::process_get(char str[] ){
   return response;
 }
 
+std::string tcp_session::process_b(char str[] ){
+  response_ = "b ";
+  response_ += question_[2];
+  response_ += " ";
+  response_ += question_[4];
+  string number{question_[4]};
+  int ilum_nr = stoi( number.c_str() ) - 1;
+  std::vector<float> values;
+  if(ilum_nr+1 > ard.size()){
+    response_ = "ERROR";
+    return response_;
+  }
+  if(question_[2]=='l'){
+     values =  ard.at(ilum_nr)->get_oneminute_lux();
+  }else if(question_[2]=='d'){
+    values =  ard.at(ilum_nr)->get_oneminute_duty();
+  }else{
+    response_ = "ERROR";
+    return response_;
+  }
+  response_ += " ";
+  response_ += std::to_string(values.at(0));
+  for (size_t i = 1; i < values.size(); i++) {
+    response_ += ",";
+    response_ += std::to_string(values.at(i));
+  }
+
+}
+
+std::string tcp_session::process_set(char str[] ){
+
+  string number{question_[2]};
+  int ilum_nr = stoi( number.c_str() ) - 1;
+  if(ilum_nr + 1 > ard.size()){
+    response_ = "error";
+
+  }else{
+    string oc{question_[4]};
+    int oc_set = stoi( oc.c_str() );
+    ard[ilum_nr]->change_ocp(oc_set);
+    response_ = "ack";
+  }
+  return response_;
+
+}
+
+
+std::string tcp_session::process_c(char str[] ){
+
+  string number{question_[4]};
+  int ilum_nr = stoi( number.c_str() ) - 1;
+  if(question_[2]=='l'){
+    ard.at(ilum_nr)-> attachclistream_lux(this);
+    socket_.async_read_some(boost::asio::buffer(question_, max_length),
+        boost::bind(&tcp_session::handle_read, this,
+          boost::asio::placeholders::error,
+          boost::asio::placeholders::bytes_transferred));
+  }else if(question_[2]=='d'){
+    ard.at(ilum_nr)-> attachclistream_duty(this);
+    socket_.async_read_some(boost::asio::buffer(question_, max_length),
+        boost::bind(&tcp_session::handle_read, this,
+          boost::asio::placeholders::error,
+          boost::asio::placeholders::bytes_transferred));
+
+  }else{
+    return "error";
+  }
+
+  return "sucess";
+}
+
+std::string tcp_session::process_d(char str[]){
+  string number{question_[4]};
+  int ilum_nr = stoi( number.c_str() ) - 1;
+  if(question_[2]=='l'){
+    ard.at(ilum_nr)->detachclistream_lux(this);
+  }else if(question_[2]=='d'){
+    ard.at(ilum_nr)-> detachclistream_duty(this);
+  }else{
+    return "ERROR";
+  }
+  return "ack";
+}
+
+
+std::string tcp_session::process_reset(char str[]){
+  for (size_t i = 0; i < ard.size(); i++) {
+    ard.at(i)->reset();
+  }
+  return "ack";
+
+}
+
 tcp_session::tcp_session(boost::asio::io_service& io_service)
   : socket_(io_service)
   {
@@ -129,123 +222,25 @@ void tcp_session::handle_read(const boost::system::error_code& error,size_t byte
     //
     if(question_[0]=='g'){
       response_ = process_get(question_);
-      boost::asio::async_write(socket_,
-          boost::asio::buffer(response_, response_.length()),
-          boost::bind(&tcp_session::handle_write, this,
-            boost::asio::placeholders::error));
     }else if(question_[0]=='b'){
-      response_ = "b ";
-      response_ += question_[2];
-      response_ += " ";
-      response_ += question_[4];
-      string number{question_[4]};
-      int ilum_nr = stoi( number.c_str() ) - 1;
-      std::vector<float> values;
-      if(ilum_nr+1 > ard.size()){
-        response_ = "ERROR";
-        boost::asio::async_write(socket_,
-            boost::asio::buffer(response_, response_.length()),
-            boost::bind(&tcp_session::handle_write, this,
-              boost::asio::placeholders::error));
-      }
-      if(question_[2]=='l'){
-         values =  ard.at(ilum_nr)->get_oneminute_lux();
-      }else if(question_[2]=='d'){
-        values =  ard.at(ilum_nr)->get_oneminute_duty();
-      }else{
-        response_ = "ERROR";
-        boost::asio::async_write(socket_,
-            boost::asio::buffer(response_, response_.length()),
-            boost::bind(&tcp_session::handle_write, this,
-              boost::asio::placeholders::error));
-        return;
-      }
-      response_ += " ";
-      response_ += std::to_string(values.at(0));
-      for (size_t i = 1; i < values.size(); i++) {
-        response_ += ",";
-        response_ += std::to_string(values.at(i));
-      }
-      boost::asio::async_write(socket_,
-          boost::asio::buffer(response_, response_.length()),
-          boost::bind(&tcp_session::handle_write, this,
-            boost::asio::placeholders::error));
-
+      response_ = process_b(question_);
     }else if(question_[0]=='s'){
-      string number{question_[2]};
-      int ilum_nr = stoi( number.c_str() ) - 1;
-      if(ilum_nr + 1 > ard.size()){
-        response_ = "error";
-
-      }else{
-        string oc{question_[4]};
-        int oc_set = stoi( oc.c_str() );
-        ard[ilum_nr]->change_ocp(oc_set);
-        response_ = "ack";
-      }
-
       // este write talvez possa ser transferido para o call back do write do set
-      boost::asio::async_write(socket_,
-          boost::asio::buffer(response_, response_.length()),
-          boost::bind(&tcp_session::handle_write, this,
-            boost::asio::placeholders::error));
-
-
+      response_ = process_set(question_);
     }else if(question_[0]=='c'){
-      string number{question_[4]};
-      int ilum_nr = stoi( number.c_str() ) - 1;
-      if(question_[2]=='l'){
-        ard.at(ilum_nr)-> attachclistream_lux(this);
-        socket_.async_read_some(boost::asio::buffer(question_, max_length),
-            boost::bind(&tcp_session::handle_read, this,
-              boost::asio::placeholders::error,
-              boost::asio::placeholders::bytes_transferred));
-      }else if(question_[2]=='d'){
-        ard.at(ilum_nr)-> attachclistream_duty(this);
-        socket_.async_read_some(boost::asio::buffer(question_, max_length),
-            boost::bind(&tcp_session::handle_read, this,
-              boost::asio::placeholders::error,
-              boost::asio::placeholders::bytes_transferred));
-      }else{
-        response_ = "ERROR";
-        boost::asio::async_write(socket_,
-            boost::asio::buffer(response_, response_.length()),
-            boost::bind(&tcp_session::handle_write, this,
-              boost::asio::placeholders::error));
+      response_ = process_c(question_);
+      if(response_!="error"){
+        return; // don't write
       }
     }else if(question_[0]=='d'){
-      response_ = "ack";
-      if(question_[2]=='l'){
-        ard.at(ilum_nr)->detachclistream_lux(this);
-
-      }else if(question_[2]=='d'){
-        response_ = "ack";
-        ard.at(ilum_nr)-> detachclistream_duty(this);
-
-      }else{
-        response_ = "ERROR";
-      }
-      boost::asio::async_write(socket_,
-          boost::asio::buffer(response_, response_.length()),
-          boost::bind(&tcp_session::handle_write, this,
-            boost::asio::placeholders::error));
+      response_ = process_d(question_);
     }else if(question_[0]=='r'){
-      for (size_t i = 0; i < ard.size(); i++) {
-        ard.at(i)->reset();
-      }
-      response_ = "ack";
-      boost::asio::async_write(socket_,
-          boost::asio::buffer(response_, response_.length()),
-          boost::bind(&tcp_session::handle_write, this,
-            boost::asio::placeholders::error));
-    }else{
-      response_ = "error";
-      boost::asio::async_write(socket_,
-          boost::asio::buffer(response_, response_.length()),
-          boost::bind(&tcp_session::handle_write, this,
-            boost::asio::placeholders::error));
+      response_ = process_reset(question_);
     }
-
+    boost::asio::async_write(socket_,
+        boost::asio::buffer(response_, response_.length()),
+        boost::bind(&tcp_session::handle_write, this,
+          boost::asio::placeholders::error));
   }
   else
   {

@@ -16,14 +16,20 @@ class tcp_session
 public:
   tcp_session(boost::asio::io_service& io_service);
   tcp::socket& socket();
-  void start();
-  void handle_read(const boost::system::error_code& error,size_t bytes_transferred);
-  void handle_write(const boost::system::error_code& error);
-  string process_get(char str[]);
-  void stream_duty(float duty,unsigned long int time_stamp,int id);
-  void stream_lux(float lux,unsigned long int time_stamp,int id);
+  void start(); // start session
+  void handle_read(const boost::system::error_code& error,size_t bytes_transferred); // normal read
+  void handle_write(const boost::system::error_code& error);// normal write
+  void stream_duty(float duty,unsigned long int time_stamp,int id); // stream_duty
+  void stream_lux(float lux,unsigned long int time_stamp,int id); // stream_lux
   void handle_write_stream(const boost::system::error_code& error);
 private:
+  string process_get(char str[]);
+  string process_b(char str[] );
+  string process_set(char str[] );
+  string process_c(char str[] );
+  string process_d(char str[] );
+  string process_reset(char str[] );
+
   tcp::socket socket_;
   enum { max_length = 1024 };
   char question_[max_length];

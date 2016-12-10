@@ -11,21 +11,7 @@ std::vector<std::shared_ptr <arduino>> ard;
 io_service ard1_service;
 io_service ard2_service;
 boost::asio::io_service io_tcp;
-shared_ptr <arduino> ard1 (new arduino{ard1_service,"/dev/ttyACM0"});
-//shared_ptr <arduino> ard2 (new arduino{ard2_service,"/dev/ttyACM1"});
-void read_keyboard(){
-  while (1) {
-    string command;
-    getline(std::cin,command);
-    if(command=="quit"){
-      exit(0);
-    }
 
-    if(command=="c"){
-     std::cout << ard1->get_current_lux() << '\n';
-    }
-  }
-}
 void tcp(){
   try
   {
@@ -38,7 +24,18 @@ void tcp(){
   }
 }
 
-void ard_thread(){
+void ard_thread_1(){
+  try
+  {
+    ard1_service.run();
+  }
+  catch (std::exception& e)
+  {
+    std::cerr << "Exception: " << e.what() << "\n";
+  }
+}
+
+void ard_thread_2(){
   try
   {
     ard2_service.run();
@@ -49,12 +46,26 @@ void ard_thread(){
   }
 }
 
-
-int main(){
+int main(int argc, char *argv[]){
+    if(argc < 3 ){
+      std::cout << "usage server.o [ard1 port] [ard2 port]" << '\n';
+      exit(0);
+    }
+    shared_ptr <arduino> ard1 (new arduino{ard1_service,argv[1]});
+    //shared_ptr <arduino> ard2 (new arduino{ard2_service,argv[2]});
     ard.push_back(ard1);
     //ard.push_back(ard2);
-    std::thread t1{read_keyboard};
-    std::thread t2{tcp};
+    std::thread t1{ard_thread_1};
+    //std::thread t2{ard_thread,ard2_service};
+    std::thread t3{tcp};
     //std::thread t3{ard};
-    ard1_service.run();
+    //ard1_service.run();
+    while (1) {
+      string command;
+      getline(std::cin,command);
+      if(command=="quit"){
+        exit(0);
+      }
+
+    }
 }
