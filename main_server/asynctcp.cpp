@@ -25,19 +25,19 @@ std::string tcp_session::process_get(char str[] ){
   switch (str[2]) {
     case 'l': // lumens
     //response += a->get_current_lux();
-    response += std::to_string( (ard[0])->get_current_lux());
+    response += std::to_string(ard.at(ilum_nr)->get_current_lux());
     break;
 
     case 'd': // duty
-    response += std::to_string((ard[ilum_nr])->get_current_duty());
+    response += std::to_string(ard.at(ilum_nr)->get_current_duty());
     break;
 
     case 'o': // ocuppancy
-    response += std::to_string(ard[ilum_nr]->get_occupancy());
+    response += std::to_string(ard.at(ilum_nr)->get_occupancy());
     break;
 
     case 'L': // lower bound
-    response += std::to_string(ard[ilum_nr]->get_low_lux());
+    response += std::to_string(ard.at(ilum_nr)->get_low_lux());
     break;
 
     case 'O': // external ILLUm
@@ -45,30 +45,55 @@ std::string tcp_session::process_get(char str[] ){
     break;
 
     case 'r': // reference
-    response += std::to_string(ard[ilum_nr]->get_reference());
+    response += std::to_string(ard.at(ilum_nr)->get_reference());
     break;
 
     case 'p': // power
     if(str[4]=='T'){
-      // insert code to total
-      // overwrite response
+      float total=0;
+      for (size_t i = 0; i < ard.size(); i++) {
+        total += ard.at(i)->get_power();
+      }
+      response += std::to_string(total);
       break;
     }
-    response += std::to_string(ard[ilum_nr]->get_power());
+    response += std::to_string(ard.at(ilum_nr)->get_power());
     break;
 
     case 'e':// error confirm essay
     if(str[4]=='T'){
-      // insert code to total
+      float total=0;
+      for (size_t i = 0; i < ard.size(); i++) {
+        total += ard.at(i)->get_energy();
+      }
+      response += std::to_string(total);
       break;
     }
-    response += std::to_string(ard[ilum_nr]->get_energy());
+    response += std::to_string(ard.at(ilum_nr)->get_energy());
     break;
 
     case 'v': // variance
-    response += std::to_string(ard[ilum_nr]->get_variance());
+    if(str[4]=='T'){
+      float total=0;
+      for (size_t i = 0; i < ard.size(); i++) {
+        total += ard.at(i)->get_variance();
+      }
+      response += std::to_string(total);
+      break;
+    }
+    response += std::to_string(ard.at(ilum_nr)->get_variance());
     break;
-
+    case 'c': // error confort_error
+    if(str[4]=='T'){
+      float total=0;
+      for (size_t i = 0; i < ard.size(); i++) {
+        total += ard.at(i)->get_variance();
+      }
+      response += std::to_string(total);
+      break;
+    }
+    response += std::to_string(ard.at(ilum_nr)->get_variance());
+    break;
     default:
     response = "error";
     break;
@@ -157,7 +182,7 @@ void tcp_session::handle_read(const boost::system::error_code& error,size_t byte
       string number{question_[4]};
       int ilum_nr = stoi( number.c_str() ) - 1;
       if(question_[2]=='l'){
-        ard.at(ilum_nr)-> attachclistream_lux(this);  
+        ard.at(ilum_nr)-> attachclistream_lux(this);
         socket_.async_read_some(boost::asio::buffer(question_, max_length),
             boost::bind(&tcp_session::handle_read, this,
               boost::asio::placeholders::error,
@@ -171,6 +196,21 @@ void tcp_session::handle_read(const boost::system::error_code& error,size_t byte
       }else{
         response_ = "ERROR";
       }
+    }else if(question_[0]=='d'){
+      response_ = "ack";
+      if(question_[2]=='l'){
+        ard.at(ilum_nr)->detachclistream_lux(this);
+
+      }else if(question_[2]=='d'){
+        ard.at(ilum_nr)-> detachclistream_duty(this);
+
+      }else{
+        response_ = "ERROR";
+      }
+      boost::asio::async_write(socket_,
+          boost::asio::buffer(response_, response_.length()),
+          boost::bind(&tcp_session::handle_write, this,
+            boost::asio::placeholders::error));
     }else if(question_[0]=='r'){
 
 

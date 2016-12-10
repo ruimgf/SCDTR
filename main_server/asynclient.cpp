@@ -33,10 +33,10 @@ void read_keyboard(){
 char response[10000];
 
 void handle_read(const boost::system::error_code& error,size_t bytes_transferred){
-  string saida{response};
+  string saida{response,0,bytes_transferred};
   std::cout << saida << '\n';
 
-    socket_.async_read_some(boost::asio::buffer(response,10000),
+  socket_.async_read_some(boost::asio::buffer(response,10000),
         &handle_read);
 }
 
@@ -44,18 +44,13 @@ void handle_read(const boost::system::error_code& error,size_t bytes_transferred
 
 
 int main(){
-  std::cout << "qui" << '\n';
   boost::system::error_code err;
-  std::cout << "oalalal" << '\n';
 
   tcp::resolver	resolver(io);
-  std::cout << "oalalal" << '\n';
 
   tcp::resolver::query query("127.0.0.1",	"17000");
-  std::cout << "oalalal" << '\n';
 
   tcp::resolver::iterator endpoint =	resolver.resolve(query);
-  std::cout << "oalalal" << '\n';
   socket_.connect(*endpoint,err);
   boost::array <char,100000>	buf;
   std::thread t1{read_keyboard};

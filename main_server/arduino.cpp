@@ -93,6 +93,11 @@ void arduino::save_value(float duty_mes, float lux_mes, int time_stamp){
     }
   }
 
+  if(cli_stream_lux.size()>0){
+    for(int i = 0; i<cli_stream_lux.size();i++ ){
+      cli_stream_lux.at(i)->stream_lux(lux_mes,time_stamp);
+    }
+  }
 
   //std::cout << "lux: "<< last_lux.read_actual_value() << std::endl;
   //std::cout << "duty: "<< last_duty.read_actual_value() << std::endl;
@@ -243,13 +248,20 @@ void arduino::attachclistream_lux(tcp_session* cli){
     cli_stream_lux.push_back(cli);
 }
 
-void detachclistream_lux(tcp_session*){
-    
+void arduino::detachclistream_lux(tcp_session* cli){
+    for (size_t i = 0; i < cli_stream_lux.size(); i++) {
+      if(cli_stream_lux.at(i)==cli){
+        cli_stream_lux.erase(cli_stream_lux.begin()+i);
+      }
+    }
 
 }
 
-void detachclistream_duty(tcp_session*){
-
-
+void arduino::detachclistream_duty(tcp_session* cli){
+  for (size_t i = 0; i < cli_stream_duty.size(); i++) {
+    if(cli_stream_duty.at(i)==cli){
+      cli_stream_duty.erase(cli_stream_duty.begin()+i);
+    }
+  }
 
 }
