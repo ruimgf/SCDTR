@@ -89,13 +89,13 @@ void arduino::save_value(float duty_mes, float lux_mes, int time_stamp){
 
   if(cli_stream_duty.size()>0){
     for(int i = 0; i<cli_stream_duty.size();i++ ){
-      cli_stream_duty.at(i)->stream_duty(duty_mes,time_stamp);
+      cli_stream_duty.at(i)->stream_duty(duty_mes,time_stamp,id);
     }
   }
 
   if(cli_stream_lux.size()>0){
     for(int i = 0; i<cli_stream_lux.size();i++ ){
-      cli_stream_lux.at(i)->stream_lux(lux_mes,time_stamp);
+      cli_stream_lux.at(i)->stream_lux(lux_mes,time_stamp,id);
     }
   }
 
@@ -252,6 +252,7 @@ void arduino::detachclistream_lux(tcp_session* cli){
     for (size_t i = 0; i < cli_stream_lux.size(); i++) {
       if(cli_stream_lux.at(i)==cli){
         cli_stream_lux.erase(cli_stream_lux.begin()+i);
+        break;
       }
     }
 
@@ -261,7 +262,18 @@ void arduino::detachclistream_duty(tcp_session* cli){
   for (size_t i = 0; i < cli_stream_duty.size(); i++) {
     if(cli_stream_duty.at(i)==cli){
       cli_stream_duty.erase(cli_stream_duty.begin()+i);
+      break;
     }
   }
 
+}
+
+void arduino::reset(){
+  ts = 0;duty = 0; lux[0] = 0; lux[1] = 0; lux[2] = 0;
+  P_i=0;
+  C_e = 0; E = 0; V_f = 0; occupancy=0; ref_lux=DEFAULT_UNCUP_LUX_REF;
+  lower_lux = 20000;
+  string mensage{"cR"};
+  async_write(sp,	boost::asio::buffer(mensage),boost::bind(&arduino::write_ocp_handler, this
+    ,boost::asio::placeholders::error));
 }

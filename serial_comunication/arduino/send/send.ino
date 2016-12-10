@@ -24,33 +24,15 @@ void check_serial(){
     if(request.charAt(0)=='c'){
 
       switch (request.charAt(1)) {
-      case 'l': // response with current lummens at this desk
-        Serial.print("l ");
-        Serial.println(lum);
-        break;
-      case 'd': // get duty cycle
-        //Serial.print("d ");
-        //Serial.println(duty);
-        duty = duty + 1;
-        break;
-      case 'o': // get occupancy
+      case 'R':
+          lum = 0 ; // chamar func de calibracao
+      break;
+      case 'o': // change oc
         if(request.charAt(2) =='N'){
            lum = 0;
         }else{
           lum = 20;
         }
-        break;
-      case 'L': // get current iluminance lower bound at desk
-        Serial.print("o ");
-        Serial.println(illu);
-        break;
-      case 'O': // get current external illuminance at desk
-        Serial.print("O ");
-        Serial.println(external_illu);
-        break;
-      case 'r': // get current external illuminance at desk
-        Serial.print("r ");
-        Serial.println(external_illu);
         break;
       default:
         break;

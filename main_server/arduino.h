@@ -66,7 +66,7 @@ class arduino{
     void attachclistream_duty(tcp_session*);
     void detachclistream_lux(tcp_session*);
     void detachclistream_duty(tcp_session*);
-
+    void reset();
 };
 
 #endif //ARDUN

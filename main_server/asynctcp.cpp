@@ -141,6 +141,13 @@ void tcp_session::handle_read(const boost::system::error_code& error,size_t byte
       string number{question_[4]};
       int ilum_nr = stoi( number.c_str() ) - 1;
       std::vector<float> values;
+      if(ilum_nr+1 > ard.size()){
+        response_ = "ERROR";
+        boost::asio::async_write(socket_,
+            boost::asio::buffer(response_, response_.length()),
+            boost::bind(&tcp_session::handle_write, this,
+              boost::asio::placeholders::error));
+      }
       if(question_[2]=='l'){
          values =  ard.at(ilum_nr)->get_oneminute_lux();
       }else if(question_[2]=='d'){
@@ -167,10 +174,16 @@ void tcp_session::handle_read(const boost::system::error_code& error,size_t byte
     }else if(question_[0]=='s'){
       string number{question_[2]};
       int ilum_nr = stoi( number.c_str() ) - 1;
-      string oc{question_[4]};
-      int oc_set = stoi( oc.c_str() );
-      ard[ilum_nr]->change_ocp(oc_set);
-      response_ = "ack";
+      if(ilum_nr + 1 > ard.size()){
+        response_ = "error";
+
+      }else{
+        string oc{question_[4]};
+        int oc_set = stoi( oc.c_str() );
+        ard[ilum_nr]->change_ocp(oc_set);
+        response_ = "ack";
+      }
+
       // este write talvez possa ser transferido para o call back do write do set
       boost::asio::async_write(socket_,
           boost::asio::buffer(response_, response_.length()),
@@ -195,6 +208,10 @@ void tcp_session::handle_read(const boost::system::error_code& error,size_t byte
               boost::asio::placeholders::bytes_transferred));
       }else{
         response_ = "ERROR";
+        boost::asio::async_write(socket_,
+            boost::asio::buffer(response_, response_.length()),
+            boost::bind(&tcp_session::handle_write, this,
+              boost::asio::placeholders::error));
       }
     }else if(question_[0]=='d'){
       response_ = "ack";
@@ -202,6 +219,7 @@ void tcp_session::handle_read(const boost::system::error_code& error,size_t byte
         ard.at(ilum_nr)->detachclistream_lux(this);
 
       }else if(question_[2]=='d'){
+        response_ = "ack";
         ard.at(ilum_nr)-> detachclistream_duty(this);
 
       }else{
@@ -212,8 +230,14 @@ void tcp_session::handle_read(const boost::system::error_code& error,size_t byte
           boost::bind(&tcp_session::handle_write, this,
             boost::asio::placeholders::error));
     }else if(question_[0]=='r'){
-
-
+      for (size_t i = 0; i < ard.size(); i++) {
+        ard.at(i)->reset();
+      }
+      response_ = "ack";
+      boost::asio::async_write(socket_,
+          boost::asio::buffer(response_, response_.length()),
+          boost::bind(&tcp_session::handle_write, this,
+            boost::asio::placeholders::error));
     }else{
       response_ = "error";
       boost::asio::async_write(socket_,
@@ -243,8 +267,9 @@ void tcp_session::handle_write(const boost::system::error_code& error){
   }
 }
 
-void tcp_session::stream_duty(float duty,unsigned long int time_stamp){
-  response_ = "c d 1 ";
+void tcp_session::stream_duty(float duty,unsigned long int time_stamp, int id){
+  response_ = "c d ";
+  response_ += std::to_string(id);
   response_ += std::to_string(duty);
   response_ += " ";
   response_ += std::to_string(time_stamp);
@@ -256,8 +281,10 @@ void tcp_session::stream_duty(float duty,unsigned long int time_stamp){
 }
 
 
-void tcp_session::stream_lux(float lux,unsigned long int time_stamp){
-  response_ = "c l 1 ";
+void tcp_session::stream_lux(float lux,unsigned long int time_stamp, int id){
+  response_ = "c l ";
+  response_ += std::to_string(id);
+  response_ += " ";
   response_ += std::to_string(lux);
   response_ += " ";
   response_ += std::to_string(time_stamp);
