@@ -3,8 +3,10 @@
 #include <thread>
 #include "arduino.h"
 #include "asynctcp.h"
+
 using namespace std;
 using namespace boost::asio;
+std::vector<std::shared_ptr <arduino>> ard;
 
 io_service ard1_service;
 io_service ard2_service;
@@ -28,9 +30,6 @@ void tcp(){
   try
   {
     tcp_server s(io_tcp, 17000);
-    s.attacharduino(ard1);
-    //s.attacharduino(ard2);
-    s.start_accept();
     io_tcp.run();
   }
   catch (std::exception& e)
@@ -39,7 +38,7 @@ void tcp(){
   }
 }
 
-void ard(){
+void ard_thread(){
   try
   {
     ard2_service.run();
@@ -52,6 +51,8 @@ void ard(){
 
 
 int main(){
+    ard.push_back(ard1);
+    //ard.push_back(ard2);
     std::thread t1{read_keyboard};
     std::thread t2{tcp};
     //std::thread t3{ard};

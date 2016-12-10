@@ -19,8 +19,6 @@ class arduino{
   private:
   boost::asio::io_service& io;
   boost::asio::serial_port sp;
-  //tcp::socket& stream_duty;
-  //tcp::socket& stream_lux;
   boost::asio::deadline_timer tim_setup;
   boost::asio::streambuf read_buf;
   std::chrono::time_point<std::chrono::system_clock> begin_time;
@@ -53,13 +51,14 @@ class arduino{
     float get_current_lux();
     bool get_occupancy();
     float get_current_duty();
+    std::vector<float> get_oneminute_duty();
+    std::vector<float> get_oneminute_lux();
     float get_reference();
     float get_low_lux();
     float get_power();
     float get_energy();
     float get_error_confort();
     float get_variance();
-    //void attachstreamduty(tcp_session s);
 };
 
 #endif //ARDUN

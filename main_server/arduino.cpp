@@ -1,4 +1,5 @@
 #include "arduino.h"
+#include "globals.h"
 
 #define SAMPLE_TIME 10 //ms
 
@@ -231,6 +232,10 @@ float arduino::get_variance(){
       return V_f;
 }
 
-//void arduino::attachstreamduty(tcp_session s){
-  //stream_duty = s.socket() ;
-//}
+std::vector<float> arduino::get_oneminute_duty(){
+      return last_duty.read_all_values();
+}
+
+std::vector<float> arduino::get_oneminute_lux(){
+      return last_lux.read_all_values();
+}

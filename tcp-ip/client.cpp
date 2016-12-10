@@ -15,7 +15,7 @@ int main()		{
   socket.connect(*endpoint,err);	//connect and wait
 
   for	(;;){
-    boost::array <char,128>	buf;
+    boost::array <char,100000>	buf;
     std::string str;
 
     std::getline (std::cin,str);
