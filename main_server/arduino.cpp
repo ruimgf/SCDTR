@@ -12,6 +12,7 @@ arduino::arduino(io_service& io_,std::string port_name)
   last_ts(600)
 {
   //initialization of variables
+  external=0;
   ts = 0;duty = 0; lux[0] = 0; lux[1] = 0; lux[2] = 0;
   P_i=0;
   C_e = 0; E = 0; V_f = 0; occupancy=0; ref_lux=DEFAULT_UNCUP_LUX_REF;
@@ -51,7 +52,7 @@ void arduino::timer_handler(const boost::system::error_code& ec)
     this, boost::asio::placeholders::error) );
 }
 
-void arduino::save_value(float duty_mes, float lux_mes, int time_stamp){
+void arduino::save_value(float duty_mes, float lux_mes, int time_stamp,float ex){
   N++;
 
   last_lux.insert_value(lux_mes);
@@ -67,6 +68,7 @@ void arduino::save_value(float duty_mes, float lux_mes, int time_stamp){
   // compute energy
   E += duty_mes * SAMPLE_TIME/1000;
 
+  external = ex;
   // compute lower bound
   if (lower_lux > lux_mes  ){
     lower_lux = lux_mes;
@@ -117,16 +119,23 @@ void arduino::read_handler(const boost::system::error_code& ec)
   if(data.length()>1){
 
     std::size_t begin = data.find("l");
-    std::size_t end = data.find("|");
-    if (begin!=std::string::npos&&end!=std::string::npos){
-      std::string clean_lux{data,begin+1,end-1};
-      std::string clean_duty{data,end+1};
+    std::size_t begin_d = data.find("d");
+    std::size_t begin_e = data.find("e");
+    if (begin!=std::string::npos&&begin_d!=std::string::npos&&begin_e!=std::string::npos){
+      std::string clean_lux{data,begin+1,begin_d-1};
+      std::string clean_duty{data,begin_d+1,begin_e-1};
+      std::string clean_external{data,begin_e+1};
       std::chrono::time_point<std::chrono::system_clock> now = std::chrono::system_clock::now();
       auto duration = now.time_since_epoch() - begin_time.time_since_epoch();
       auto millis = std::chrono::duration_cast<std::chrono::milliseconds>(duration).count();
 
 
-      save_value(std::stoi(clean_duty)/255.0,std::stof(clean_lux),millis);
+      try{
+        save_value(std::stof(clean_duty)/255.0,std::stof(clean_lux),millis,std::stof(clean_external));
+      }catch(int error){
+        std::cout << "error in convertion" << '\n';
+      }
+
 
 
       tim_setup.expires_from_now(boost::posix_time::millisec(11));
@@ -175,13 +184,13 @@ void arduino::read_setup_handler(const boost::system::error_code& ec)
 
 void arduino::change_ocp(bool change_ocp){
   boost::asio::streambuf buf;
-  std::string mensage{"co"};
+  std::string mensage;
   if(change_ocp!=0){
-    mensage += "O"; // ocupate
+    mensage = "O"; // ocupate
     ref_lux = DEFAULT_OCCUP_LUX_REF;
     occupancy = 1;
   }else{
-    mensage += "N"; // not ocupate
+    mensage = "N"; // not ocupate
     ref_lux = DEFAULT_UNCUP_LUX_REF;
     occupancy = 0;
   }
@@ -203,6 +212,10 @@ float arduino::get_current_lux(){
 
 float arduino::get_low_lux(){
       return lower_lux;
+}
+
+float arduino::get_external(){
+      return external;
 }
 
 float arduino::get_current_duty(){

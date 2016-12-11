@@ -40,7 +40,7 @@ std::string tcp_session::process_get(char str[] ){
     break;
 
     case 'O': // external ILLUm
-    response += "error";
+    response += std::to_string(ard.at(ilum_nr)->get_external()); ;
     break;
 
     case 'r': // reference
@@ -148,7 +148,7 @@ std::string tcp_session::process_set(char str[] ){
 }
 
 
-std::string tcp_session::process_c(char str[] ){
+std::string tcp_session::process_c(char str[]){
 
   string number{question_[4]};
   int ilum_nr = stoi( number.c_str() ) - 1;
@@ -213,11 +213,18 @@ void tcp_session::start()
         boost::asio::placeholders::bytes_transferred));
 }
 
+void tcp_session::stopallstreams(){
+  for (size_t i = 0; i < ard.size(); i++) {
+    ard.at(i)->detachclistream_duty(this);
+    ard.at(i)->detachclistream_lux(this);
+  }
+
+}
+
 void tcp_session::handle_read(const boost::system::error_code& error,size_t bytes_transferred){
   if (!error)
   {
     response_="";
-    int ilum_nr;
     // isto não é um switch porque não dava para criar variaveis la no meio
     //
     if(question_[0]=='g'){
@@ -244,6 +251,7 @@ void tcp_session::handle_read(const boost::system::error_code& error,size_t byte
   }
   else
   {
+    stopallstreams();
     delete this;
   }
 }
@@ -258,6 +266,7 @@ void tcp_session::handle_write(const boost::system::error_code& error){
   }
   else
   {
+    stopallstreams();
     delete this;
   }
 }
@@ -293,6 +302,7 @@ void tcp_session::stream_lux(float lux,unsigned long int time_stamp, int id){
   mtx.unlock();
 }
 
+
 void tcp_session::handle_write_stream(const boost::system::error_code& error){
   if (!error)
   {
@@ -300,6 +310,7 @@ void tcp_session::handle_write_stream(const boost::system::error_code& error){
   }
   else
   {
+    stopallstreams();
     delete this;
   }
 }

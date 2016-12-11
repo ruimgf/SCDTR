@@ -22,6 +22,7 @@ public:
   void stream_duty(float duty,unsigned long int time_stamp,int id); // stream_duty
   void stream_lux(float lux,unsigned long int time_stamp,int id); // stream_lux
   void handle_write_stream(const boost::system::error_code& error);
+  void stopallstreams();
 private:
   string process_get(char str[]);
   string process_b(char str[] );

@@ -53,7 +53,7 @@ int main(){
 
   tcp::resolver	resolver(io);
 
-  tcp::resolver::query query("127.0.0.1",	"17000");
+  tcp::resolver::query query("10.0.0.1",	"17000");
 
   tcp::resolver::iterator endpoint =	resolver.resolve(query);
   socket_.connect(*endpoint,err);

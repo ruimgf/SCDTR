@@ -39,13 +39,13 @@ class arduino{
   float_circular_buffer last_duty;//stores last_minute history;
   float_circular_buffer last_ts;//sotres last minuit history of ts;
   float ref_lux;
-
+  float external;
   void timer_handler(const boost::system::error_code& ec);
   void read_setup_handler(const boost::system::error_code& ec);
   void begin_timer_handler(const boost::system::error_code& ec);
   void read_handler(const boost::system::error_code& ec);
   void write_ocp_handler(const boost::system::error_code& ec);
-  void save_value(float duty_mes, float lux_mes, int time_stamp);
+  void save_value(float duty_mes, float lux_mes, int time_stamp,float external);
   public:
     int id;
     arduino(io_service& io_,std::string port_name);
@@ -62,6 +62,7 @@ class arduino{
     float get_energy();
     float get_error_confort();
     float get_variance();
+    float get_external();
     void attachclistream_lux(tcp_session*);
     void attachclistream_duty(tcp_session*);
     void detachclistream_lux(tcp_session*);
