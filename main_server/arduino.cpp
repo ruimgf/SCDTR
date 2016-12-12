@@ -17,6 +17,7 @@ arduino::arduino(io_service& io_,std::string port_name)
   P_i=0;
   C_e = 0; E = 0; V_f = 0; occupancy=0; ref_lux=DEFAULT_UNCUP_LUX_REF;
   lower_lux = 20000;
+  N=0;
   begin_time = std::chrono::system_clock::now();
   try{
     sp.open(port_name);
@@ -64,9 +65,9 @@ void arduino::save_value(float duty_mes, float lux_mes, int time_stamp,float ex)
   lux[1] = lux[0];
   lux[0] = lux_mes;
 
-  P_i = duty_mes * SAMPLE_TIME/1000;
+  P_i = duty_mes * SAMPLE_TIME;
   // compute energy
-  E += duty_mes * SAMPLE_TIME/1000;
+  E += duty_mes * SAMPLE_TIME;
 
   external = ex;
   // compute lower bound
@@ -82,11 +83,11 @@ void arduino::save_value(float duty_mes, float lux_mes, int time_stamp,float ex)
     C_e = (C_e * (N-1))/N;
 
   }
-  if(N>=3){
-      V_f = V_f*(N-1)*pow(SAMPLE_TIME/1000,2);
-      V_f += abs(lux[0]-lux[1]-lux[2]);
-      V_f = V_f/(N*SAMPLE_TIME/1000);
 
+  if(N>=3){
+      V_f = V_f*(N-1)*pow(SAMPLE_TIME,2);
+      V_f += abs(lux[0]-2*lux[1]+lux[2]);
+      V_f = V_f/((N*pow(SAMPLE_TIME,2)));
   }
 
   if(cli_stream_duty.size()>0){
@@ -123,22 +124,31 @@ void arduino::read_handler(const boost::system::error_code& ec)
     std::size_t begin_e = data.find("e");
     if (begin!=std::string::npos&&begin_d!=std::string::npos&&begin_e!=std::string::npos){
       std::string clean_lux{data,begin+1,begin_d-1};
+      std::stringstream clean_lux_{clean_lux};
       std::string clean_duty{data,begin_d+1,begin_e-1};
+      std::stringstream clean_duty_{clean_duty};
       std::string clean_external{data,begin_e+1};
+      std::stringstream clean_external_{clean_external};
       std::chrono::time_point<std::chrono::system_clock> now = std::chrono::system_clock::now();
       auto duration = now.time_since_epoch() - begin_time.time_since_epoch();
       auto millis = std::chrono::duration_cast<std::chrono::milliseconds>(duration).count();
+      int duty_;
+      float lux_;
+      float external_;
 
 
       try{
-        save_value(std::stof(clean_duty)/255.0,std::stof(clean_lux),millis,std::stof(clean_external));
+        clean_duty_ >> duty_;
+        clean_lux_ >> lux_;
+        clean_external_ >> external_;
+        save_value(duty_,lux_,millis,external_);
       }catch(int error){
         std::cout << "error in convertion" << '\n';
       }
 
 
 
-      tim_setup.expires_from_now(boost::posix_time::millisec(11));
+      tim_setup.expires_from_now(boost::posix_time::millisec(10));
       tim_setup.async_wait( boost::bind(&arduino::timer_handler, this
         ,boost::asio::placeholders::error) );
       return;
@@ -286,7 +296,7 @@ void arduino::reset(){
   P_i=0;
   C_e = 0; E = 0; V_f = 0; occupancy=0; ref_lux=DEFAULT_UNCUP_LUX_REF;
   lower_lux = 20000;
-  string mensage{"cR"};
+  string mensage{"R"};
   async_write(sp,	boost::asio::buffer(mensage),boost::bind(&arduino::write_ocp_handler, this
     ,boost::asio::placeholders::error));
 }

@@ -103,20 +103,20 @@ std::string tcp_session::process_get(char str[] ){
 
 std::string tcp_session::process_b(char str[] ){
   response_ = "b ";
-  response_ += question_[2];
+  response_ += str[2];
   response_ += " ";
-  response_ += question_[4];
-  string number{question_[4]};
+  response_ += str[4];
+  string number{str[4]};
   int ilum_nr = stoi( number.c_str() ) - 1;
   std::vector<float> values;
   if(ilum_nr+1 > ard.size()){
     response_ = "ERROR";
     return response_;
   }
-  if(question_[2]=='l'){
+  if(str[2]=='l'){
      values =  ard.at(ilum_nr)->get_oneminute_lux();
-  }else if(question_[2]=='d'){
-    values =  ard.at(ilum_nr)->get_oneminute_duty();
+  }else if(str[2]=='d'){
+     values =  ard.at(ilum_nr)->get_oneminute_duty();
   }else{
     response_ = "ERROR";
     return response_;
@@ -127,6 +127,8 @@ std::string tcp_session::process_b(char str[] ){
     response_ += ",";
     response_ += std::to_string(values.at(i));
   }
+  return response_;
+
 
 }
 
@@ -136,7 +138,6 @@ std::string tcp_session::process_set(char str[] ){
   int ilum_nr = stoi( number.c_str() ) - 1;
   if(ilum_nr + 1 > ard.size()){
     response_ = "error";
-
   }else{
     string oc{question_[4]};
     int oc_set = stoi( oc.c_str() );
