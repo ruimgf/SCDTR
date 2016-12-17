@@ -9,7 +9,7 @@
 #include <chrono>
 #include "globals.h"
 
-#define DEFAULT_OCCUP_LUX_REF 20;
+#define DEFAULT_OCCUP_LUX_REF 30;
 #define DEFAULT_UNCUP_LUX_REF 10;
 
 using namespace boost::asio;

@@ -7,9 +7,9 @@ arduino::arduino(io_service& io_,std::string port_name)
 : io(io_),
   sp(io),
   tim_setup(io),
-  last_lux(600),
-  last_duty(600),
-  last_ts(600)
+  last_lux(6000),
+  last_duty(6000),
+  last_ts(6000)
 {
   //initialization of variables
   external=0;
@@ -195,7 +195,7 @@ void arduino::read_setup_handler(const boost::system::error_code& ec)
 void arduino::change_ocp(bool change_ocp){
   boost::asio::streambuf buf;
   std::string mensage;
-  if(change_ocp!=false){
+  if(change_ocp!=0){
     mensage = "O"; // ocupate
     ref_lux = DEFAULT_OCCUP_LUX_REF;
     occupancy = 1;

@@ -2,11 +2,12 @@
 #include <iostream>
 #include <boost/asio.hpp>
 #include <boost/bind.hpp>
-
+#include "gnuplot_i.hpp"
 
 using boost::asio::deadline_timer;
 using boost::asio::ip::tcp;
 
+Gnuplot g1("plot");
 
 class client
 {
@@ -126,6 +127,9 @@ private:
 
   void handle_read(const boost::system::error_code& ec)
   {
+    g1.showonscreen();
+    g1.reset_plot();
+
     if (stopped_)
       return;
 
@@ -140,8 +144,30 @@ private:
       if (!line.empty())
       {
         std::cout << "Received: " << line << "\n";
-      }
+        if(line[0]=='b'){
+          std::vector<double> time_number;
+          std::vector<double> numbers;
+          double j;
+          j = 0;
+          size_t i = 7;
+          size_t p = 1;
+          while(p!=std::string::npos){
+            std::string clean{line,i,line.length()};
+            p = clean.find(',');
+            std::string value{clean,0,p-1};
+            i=i+p+1;
+            std::stringstream number{value};
+            double nr;
+            number >> nr;
+            numbers.push_back(nr);
+            time_number.push_back(j);
+            j = j+1;
+          }
 
+          g1.plot_xy(time_number,numbers,"user-defined points 2d");
+          g1.showonscreen();
+        }
+      }
       start_read();
     }
     else
@@ -203,18 +229,18 @@ private:
     // Put the actor back to sleep.
     deadline_.async_wait(boost::bind(&client::check_deadline, this));
   }
-  
+
   void start_read_console()
   {
-     boost::asio::async_read_until(input_, console_buffer_, '\n', 
+     boost::asio::async_read_until(input_, console_buffer_, '\n',
              boost::bind(&client::handle_read_console, this, _1, _2));
   }
-  
+
   void handle_read_console(const boost::system::error_code& ec, std::size_t length)
-  { 
+  {
     if (stopped_)
       return;
-    
+
     if (!ec)
     {
       // Extract the newline-delimited message from the buffer.
@@ -229,13 +255,13 @@ private:
         terminated_line = line + std::string("\n");
         std::size_t n = terminated_line.size();
         terminated_line.copy(send_buffer_, n);
-        boost::asio::async_write(socket_, boost::asio::buffer(send_buffer_,n), 
+        boost::asio::async_write(socket_, boost::asio::buffer(send_buffer_,n),
            boost::bind(&client::handle_send, this, _1, _2));
-        
+
       }
       /*if (length != 0)
       {
-        boost::asio::async_write(socket_, console_buffer_, 
+        boost::asio::async_write(socket_, console_buffer_,
            boost::bind(&client::handle_send, this, _1, _2));
       }*/
 
@@ -252,7 +278,7 @@ private:
   {
     if (stopped_)
       return;
-    
+
     if (!ec)
     {
       std::cout << "Sent " << length << " bytes" << std::endl;
@@ -264,9 +290,10 @@ private:
       stop();
     }
   }
-  
+
 
 private:
+
   bool stopped_;
   tcp::socket socket_;
   boost::asio::streambuf input_buffer_;
@@ -277,7 +304,6 @@ private:
   enum {max_length=1024};
   char send_buffer_[max_length];
 };
-
 int main(int argc, char* argv[])
 {
   try

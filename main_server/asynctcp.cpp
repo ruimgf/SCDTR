@@ -147,15 +147,13 @@ std::string tcp_session::process_set(char str[] ){
   int ilum_nr;
   number_stream >> ilum_nr;
   ilum_nr --;
-  std::cout << ilum_nr << '\n';
   if(ilum_nr + 1 > ard.size()){
     response_ = "error";
   }else{
     string oc{question_[4]};
+    std::stringstream oct{oc};
     bool oc_set ;
-    std::stringstream number_stream{oc};
-    number_stream >> oc_set;
-    std::cout << oc_set << '\n';
+    oct >> oc_set;
     ard[ilum_nr]->change_ocp(oc_set);
     response_ = "ack";
   }
