@@ -18,28 +18,27 @@ using boost::asio::ip::tcp;
 
 class arduino{
   private:
-  boost::asio::io_service& io;
+  boost::asio::io_service& io; // io service
   boost::asio::serial_port sp;
   boost::asio::deadline_timer tim_setup;
   boost::asio::streambuf read_buf;
-  std::vector<tcp_session *> cli_stream_duty;
-  std::vector<tcp_session *> cli_stream_lux;
-  std::chrono::time_point<std::chrono::system_clock> begin_time;
+  std::vector<tcp_session *> cli_stream_duty; // stream clients
+  std::vector<tcp_session *> cli_stream_lux; // stream clients
+  std::chrono::time_point<std::chrono::system_clock> begin_time; // iluminary begin time
   unsigned long int N = 0;
   float ts; //indicates the # of the current sample;
-  float duty;
-  float lower_lux;
+  float lower_lux; // lowest value of ilumination
   float lux[3]; // li[0] - li, li[1] - l_(i-1),li[2] - l_(i-2) // lux at time i
   float C_e; // confort_error
   float E; // energy
   float V_f; // vflicker
-  float P_i;
+  float P_i; // instantain power
   bool occupancy;
   float_circular_buffer last_lux;//stores last minute history;
   float_circular_buffer last_duty;//stores last_minute history;
-  float_circular_buffer last_ts;//sotres last minuit history of ts;
+  float_circular_buffer last_ts;//stores last minuit history of ts;
   float ref_lux;
-  float external;
+  float external; // external ilumination
   void timer_handler(const boost::system::error_code& ec);
   void read_setup_handler(const boost::system::error_code& ec);
   void begin_timer_handler(const boost::system::error_code& ec);
@@ -47,6 +46,7 @@ class arduino{
   void write_ocp_handler(const boost::system::error_code& ec);
   void save_value(float duty_mes, float lux_mes, int time_stamp,float external);
   public:
+    // detail description of methods is in .cpp file
     int id;
     arduino(io_service& io_,std::string port_name);
     ~arduino();

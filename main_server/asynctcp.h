@@ -10,7 +10,7 @@ using namespace boost::asio;
 using boost::asio::ip::tcp;
 using namespace std;
 
-
+// Detailed description of methods is in .cpp file 
 class tcp_session
 {
 public:

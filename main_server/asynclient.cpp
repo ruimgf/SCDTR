@@ -1,3 +1,7 @@
+/**
+ * Simple assync client made during the inicial testes
+ */
+
 #include <iostream>
 #include <boost/array.hpp>
 #include <boost/asio.hpp>

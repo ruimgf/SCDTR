@@ -1,16 +1,10 @@
-//
-// async_tcp_echo_tcp_server.cpp
-// ~~~~~~~~~~~~~~~~~~~~~~~~~
-//
-// Copyright (c) 2003-2008 Christopher M. Kohlhoff (chris at kohlhoff dot com)
-//
-// Distributed under the Boost Software License, Version 1.0. (See accompanying
-// file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
-//
-
 #include "asynctcp.h"
 #include "globals.h"
-
+/**
+ * [tcp_session::process_get method to process a get request from a client]
+ * @param  str [request from client]
+ * @return     [mensage to send to client]
+ */
 std::string tcp_session::process_get(char str[] ){
   string response;
   string number{str[4]};
@@ -104,7 +98,11 @@ std::string tcp_session::process_get(char str[] ){
   }
   return response;
 }
-
+/**
+ * [tcp_session::process_b method to process a b request from a client]
+ * @param  str [request from client]
+ * @return     [mensage to send to client]
+ */
 std::string tcp_session::process_b(char str[] ){
   response_ = "b ";
   response_ += str[2];
@@ -139,7 +137,11 @@ std::string tcp_session::process_b(char str[] ){
 
 
 }
-
+/**
+ * [tcp_session::process_set method to process a set request from a client]
+ * @param  str [request from client]
+ * @return     [mensage to send to client]
+ */
 std::string tcp_session::process_set(char str[] ){
 
   string number{question_[2]};
@@ -161,7 +163,11 @@ std::string tcp_session::process_set(char str[] ){
 
 }
 
-
+/**
+ * [tcp_session::process_get method to process a c request from a client]
+ * @param  str [request from client]
+ * @return     [mensage to send to client]
+ */
 std::string tcp_session::process_c(char str[]){
 
   string number{question_[4]};
@@ -188,7 +194,11 @@ std::string tcp_session::process_c(char str[]){
 
   return "sucess";
 }
-
+/**
+ * [tcp_session::process_d method to process a d request from a client]
+ * @param  str [request from client]
+ * @return     [mensage to send to client]
+ */
 std::string tcp_session::process_d(char str[]){
   string number{question_[4]};
   std::stringstream number_stream{number};
@@ -205,7 +215,11 @@ std::string tcp_session::process_d(char str[]){
   return "ack";
 }
 
-
+/**
+ * [tcp_session::process_reset method to process a reset request from a client]
+ * @param  str [request from client]
+ * @return     [mensage to send to client]
+ */
 std::string tcp_session::process_reset(char str[]){
   for (size_t i = 0; i < ard.size(); i++) {
     ard.at(i)->reset();
@@ -213,18 +227,26 @@ std::string tcp_session::process_reset(char str[]){
   return "ack";
 
 }
-
+/**
+ * [tcp_session::tcp_session tcp_session constructor]
+ * @param io_service [io service to run this section]
+ */
 tcp_session::tcp_session(boost::asio::io_service& io_service)
   : socket_(io_service)
   {
 
   }
-
+/**
+ * [tcp_session::socket method to get the socket associated with this session]
+ * @return [address of socket]
+ */
 tcp::socket& tcp_session::socket()
 {
   return socket_;
 }
-
+/**
+ * [tcp_session::start start session]
+ */
 void tcp_session::start()
 {
   socket_.async_read_some(boost::asio::buffer(question_, max_length),
@@ -232,7 +254,9 @@ void tcp_session::start()
         boost::asio::placeholders::error,
         boost::asio::placeholders::bytes_transferred));
 }
-
+/**
+ * [tcp_session::stopallstreams stop all streams]
+ */
 void tcp_session::stopallstreams(){
   for (size_t i = 0; i < ard.size(); i++) {
     ard.at(i)->detachclistream_duty(this);
@@ -240,7 +264,11 @@ void tcp_session::stopallstreams(){
   }
 
 }
-
+/**
+ * [tcp_session::handle_read method to handle a read from a tcp_session]
+ * @param error             [error code]
+ * @param bytes_transferred [nr of bytes_transferred]
+ */
 void tcp_session::handle_read(const boost::system::error_code& error,size_t bytes_transferred){
   if (!error)
   {
@@ -276,7 +304,10 @@ void tcp_session::handle_read(const boost::system::error_code& error,size_t byte
     delete this;
   }
 }
-
+/**
+ * [tcp_session::handle_write method to handle a write to a client]
+ * @param error [error code]
+ */
 void tcp_session::handle_write(const boost::system::error_code& error){
   if (!error)
   {
@@ -291,7 +322,12 @@ void tcp_session::handle_write(const boost::system::error_code& error){
     delete this;
   }
 }
-
+/**
+ * [tcp_session::stream_duty method to stream duty]
+ * @param duty       [value of duty]
+ * @param time_stamp [time stamp]
+ * @param id         [id of iluminarie]
+ */
 void tcp_session::stream_duty(float duty,unsigned long int time_stamp, int id){
   mtx.lock();
   response_stream_duty = "c d ";
@@ -308,7 +344,12 @@ void tcp_session::stream_duty(float duty,unsigned long int time_stamp, int id){
   mtx.unlock();
 }
 
-
+/**
+ * [tcp_session::stream_lux method to stream lux]
+ * @param lux        [value of lux ]
+ * @param time_stamp [time stamp]
+ * @param id         [id of iluminary]
+ */
 void tcp_session::stream_lux(float lux,unsigned long int time_stamp, int id){
   mtx.lock();
   response_stream_lux = "c l ";
@@ -325,7 +366,10 @@ void tcp_session::stream_lux(float lux,unsigned long int time_stamp, int id){
   mtx.unlock();
 }
 
-
+/**
+ * [tcp_session::handle_write_stream method to handle a write of strem values]
+ * @param error [error code]
+ */
 void tcp_session::handle_write_stream(const boost::system::error_code& error){
   if (!error)
   {
@@ -338,7 +382,11 @@ void tcp_session::handle_write_stream(const boost::system::error_code& error){
   }
 }
 
-// tcp_server
+/**
+ * [tcp_server::tcp_server constructror of tcp server]
+ * @param io_service [io service associated to server]
+ * @param port       [TCP port of server]
+ */
 tcp_server::tcp_server(boost::asio::io_service& io_service, short port)
   : io_service_(io_service),
     acceptor_(io_service, tcp::endpoint(tcp::v4(), port))
@@ -348,7 +396,11 @@ tcp_server::tcp_server(boost::asio::io_service& io_service, short port)
       boost::bind(&tcp_server::handle_accept, this, new_session,
         boost::asio::placeholders::error));
 }
-
+/**
+ * [tcp_server::handle_accept method to handle a assync accept]
+ * @param new_session [ & of struct to handle the connection]
+ * @param error       [error code]
+ */
 void tcp_server::handle_accept(tcp_session* new_session,
     const boost::system::error_code& error){
   if (!error)

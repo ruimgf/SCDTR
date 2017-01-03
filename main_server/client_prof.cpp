@@ -1,3 +1,8 @@
+/**
+ * client forneced by professor with a small modification
+ * to allow make a plot of last minute history
+*/
+
 #include <unistd.h>
 #include <iostream>
 #include <boost/asio.hpp>
@@ -144,6 +149,7 @@ private:
       if (!line.empty())
       {
         std::cout << "Received: " << line << "\n";
+        // if a line ir a last minute plot response;
         if(line[0]=='b'){
           std::vector<double> time_number;
           std::vector<double> numbers;

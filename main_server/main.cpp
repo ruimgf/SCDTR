@@ -12,6 +12,10 @@ io_service ard1_service;
 io_service ard2_service;
 boost::asio::io_service io_tcp;
 
+
+/**
+ * [tcp thread function of tcp server]
+ */
 void tcp(){
   try
   {
@@ -23,7 +27,9 @@ void tcp(){
     std::cerr << "Exception: " << e.what() << "\n";
   }
 }
-
+/**
+ * [ard_thread_1 thread function of io_service 1]
+ */
 void ard_thread_1(){
   try
   {
@@ -34,7 +40,9 @@ void ard_thread_1(){
     std::cerr << "Exception: " << e.what() << "\n";
   }
 }
-
+/**
+ * [ard_thread_1 thread function of io_service 2]
+ */
 void ard_thread_2(){
   try
   {
@@ -58,7 +66,7 @@ int main(int argc, char *argv[]){
     std::thread t1{ard_thread_1};
     std::thread t2{ard_thread_2};
     std::thread t3{tcp};
-    //ard1_service.run();
+    // this thread read comands from keyboard
     while (1) {
       string command;
       getline(std::cin,command);

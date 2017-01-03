@@ -1,3 +1,6 @@
+/*
+Our implementation of circular buffer
+ */
 #include "float_circular_buffer.h"
 
 using namespace std;

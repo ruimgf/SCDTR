@@ -37,22 +37,31 @@ arduino::~arduino()
 {
   sp.close();
 }
-
+/**
+ * [arduino::begin_timer_handler handler for begin timer callback]
+ * @param ec [error code]
+ */
 void arduino::begin_timer_handler(const boost::system::error_code& ec)
 {
   async_read_until(sp, read_buf, "\n", boost::bind(&arduino::read_setup_handler,
     this, boost::asio::placeholders::error) );
 }
-
+/**
+ * [arduino::timer_handler handler for timer callback]
+ * @param ec [description]
+ */
 void arduino::timer_handler(const boost::system::error_code& ec)
 {
-  //std::ostringstream os;
-  //os << "w" ;
-  //escreve W para o arduino para sair do setup
   async_read_until(sp, read_buf, "\n", boost::bind(&arduino::read_handler,
     this, boost::asio::placeholders::error) );
 }
-
+/**
+ * [arduino::save_value method to save one readed value from serial]
+ * @param duty_mes   [duty mesure]
+ * @param lux_mes    [lux mesure]
+ * @param time_stamp [server time of mesure]
+ * @param ex         [external ilumination mesure]
+ */
 void arduino::save_value(float duty_mes, float lux_mes, int time_stamp,float ex){
   N++;
 
@@ -108,7 +117,10 @@ void arduino::save_value(float duty_mes, float lux_mes, int time_stamp,float ex)
 
 
 }
-
+/**
+ * [arduino::read_handler method to handler on read from serial]
+ * @param ec [error code]
+ */
 void arduino::read_handler(const boost::system::error_code& ec)
 {
   /*read the values present in buffer*/
@@ -163,7 +175,10 @@ void arduino::read_handler(const boost::system::error_code& ec)
 
 
 }
-
+/**
+ * [arduino::read_setup_handler method to handler setup read]
+ * @param ec [error code]
+ */
 void arduino::read_setup_handler(const boost::system::error_code& ec)
 {
   /*read the values present in buffer*/
@@ -191,7 +206,10 @@ void arduino::read_setup_handler(const boost::system::error_code& ec)
 
 }
 
-
+/**
+ * [arduino::change_ocp method to change ocupantion on iluminary]
+ * @param change_ocp [bool representing true - occupate , false - not ocupate]
+ */
 void arduino::change_ocp(bool change_ocp){
   boost::asio::streambuf buf;
   std::string mensage;
@@ -209,68 +227,118 @@ void arduino::change_ocp(bool change_ocp){
 
 }
 
-
+/**
+ * [arduino::write_ocp_handler write handler]
+ * @param ec [error code]
+ */
 void arduino::write_ocp_handler(const boost::system::error_code& ec){
   // do noting
 
 }
 
-
+/**
+ * [arduino::get_current_lux method to get current lux on iluminary]
+ * @return [lux mesure]
+ */
 float arduino::get_current_lux(){
       return last_lux.read_actual_value();
 }
 
+/**
+ * [arduino::get_low_lux method to get the lowest lux mesure on this desk]
+ * @return [lowest lux value]
+ */
 float arduino::get_low_lux(){
       return lower_lux;
 }
-
+/**
+ * [arduino::get_external method to get external ilumination mesure]
+ * @return [external ilumination mesure]
+ */
 float arduino::get_external(){
       return external;
 }
-
+/**
+ * [arduino::get_current_duty method to get current duty mesure]
+ * @return [description]
+ */
 float arduino::get_current_duty(){
       return last_duty.read_actual_value();
 }
+/**
+ * [arduino::get_occupancy method to get ocuppancy]
+ * @return [ocupation value]
+ */
 bool arduino::get_occupancy(){
       return occupancy;
 }
-
+/**
+ * [arduino::get_reference method to get reference value]
+ * @return [reference value]
+ */
 float arduino::get_reference(){
     return ref_lux;
 }
-
+/**
+ * [arduino::get_power method to get instatain power consumation]
+ * @return [power consumation]
+ */
 float arduino::get_power(){
     return P_i;
 }
-
+/**
+ * [arduino::get_energy method to get energy]
+ * @return [energy consumation]
+ */
 float arduino::get_energy(){
   return E;
 }
-
+/**
+ * [arduino::get_error_confort method to get error confort]
+ * @return [error confort value]
+ */
 float arduino::get_error_confort(){
   return C_e;
 }
-
+/**
+ * [arduino::get_variance method to get variance value]
+ * @return [variance value ]
+ */
 float arduino::get_variance(){
       return V_f;
 }
-
+/**
+ * [arduino::get_oneminute_duty method to get duty last minute history]
+ * @return [vector of last minute duty history]
+ */
 std::vector<float> arduino::get_oneminute_duty(){
       return last_duty.read_all_values();
 }
-
+/**
+ * [arduino::get_oneminute_lux method to get lux last minute history]
+ * @return [vector of last minute lux history]
+ */
 std::vector<float> arduino::get_oneminute_lux(){
       return last_lux.read_all_values();
 }
-
+/**
+ * [arduino::attachclistream_duty method to start new client to recive duty stream]
+ * @param cli [tcp_session to recive stream]
+ */
 void arduino::attachclistream_duty(tcp_session* cli){
     cli_stream_duty.push_back(cli);
 }
-
+/**
+ * [arduino::attachclistream_lux method to start new client to recive lux stream]
+ * @param cli [tcp_session to recive stream]
+ */
 void arduino::attachclistream_lux(tcp_session* cli){
     cli_stream_lux.push_back(cli);
 }
-
+/**
+ * [arduino::attachclistream_lux method to stop client to recive lux stream]
+ * @param cli [tcp_session to stop recive stream]
+ */
 void arduino::detachclistream_lux(tcp_session* cli){
     for (size_t i = 0; i < cli_stream_lux.size(); i++) {
       if(cli_stream_lux.at(i)==cli){
@@ -280,7 +348,10 @@ void arduino::detachclistream_lux(tcp_session* cli){
     }
 
 }
-
+/**
+ * [arduino::attachclistream_duty method to stop client to recive duty stream]
+ * @param cli [tcp_session to stop recive stream]
+ */
 void arduino::detachclistream_duty(tcp_session* cli){
   for (size_t i = 0; i < cli_stream_duty.size(); i++) {
     if(cli_stream_duty.at(i)==cli){
@@ -290,7 +361,9 @@ void arduino::detachclistream_duty(tcp_session* cli){
   }
 
 }
-
+/**
+ * [arduino::reset method to reset iluminarie and recalibrate]
+ */
 void arduino::reset(){
   ts = 0;duty = 0; lux[0] = 0; lux[1] = 0; lux[2] = 0;
   P_i=0;
